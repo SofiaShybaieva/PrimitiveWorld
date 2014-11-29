@@ -1,0 +1,22 @@
+package primitiveWorld.interfaces;
+
+import java.awt.Graphics;
+import java.awt.Point;
+
+public interface Enginable {
+
+    void loadLevel(File file);
+
+    String nextStep();
+
+    void mousePress(Point coord);
+
+    void mouseMove(Point coord);
+
+    void redraw();
+
+    void setGraphics(Graphics g);
+
+    void setSize(int with, int height);
+
+}

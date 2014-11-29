@@ -1,0 +1,8 @@
+package primitiveWorld.interfaces;
+
+import java.awt.Graphics;
+
+public interface Drawable extends MapObjectable{
+
+    void draw(Graphics g);
+}

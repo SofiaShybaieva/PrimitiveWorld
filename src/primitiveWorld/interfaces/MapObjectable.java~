@@ -1,0 +1,14 @@
+package primitiveWorld.interfaces;
+
+import java.awt.Point;
+
+public interface MapObjectable {
+
+    String getTypeName();
+
+    Point getCoordinate();
+
+    void setCoordinate(Point coord);
+
+    Boolean is(String ability);
+}
