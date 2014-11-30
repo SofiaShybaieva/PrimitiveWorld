@@ -23,6 +23,7 @@ import primitiveWorld.interfaces.Drawable;
 import primitiveWorld.interfaces.Enginable;
 import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
 import primitiveWorld.location.Location;
 import primitiveWorld.location.LocationLoader;
 import primitiveWorld.location.WrongFileFormat;
@@ -102,18 +103,27 @@ public class Engine implements Enginable {
 	public String nextStep() {
 		String ret = null;
 		for (LocalObject t : this.localObjects) {
-			if (t.is("Active")) {
-				((Active) t).nextStep();
-				if (t.is("Movable")) {
-					if (((Movable) t).getStepTarget() != t.getCoordinate()) {
+			if (t.is("Active") != true)
+				continue;
+			((Active) t).nextStep();
+			if (t.is("Movable") != true)
+				continue;
+			// lab 11 - check if current object t touches any other object, if
+			// so, then do not move
 
-						if (location.isCanMove(((Movable) t))) {
-							((Movable) t).moveTo(((Movable) t).getStepTarget());
-						} else {
-							((Movable) t).moveTo(t.getCoordinate());
-						}
-					}
+			Point target = ((Movable) t).getStepTarget();
+			LocalObject touched = checkTouch((Movable) t, target);
+			if (touched != null) // if touch event
+				{
+				 ((Tight)touched).touch(t);
+				 ((Tight)t).touch(touched);
 				}
+
+			if (target != t.getCoordinate()) {
+				if (location.isCanMove((Movable) t)) {
+					((Movable) t).moveTo(((Movable) t).getStepTarget());
+				}
+
 			}
 		} // for
 
@@ -146,6 +156,20 @@ public class Engine implements Enginable {
 			drawMessage(globalEventsMessages);
 		}
 		return globalEventsMessages;
+	}
+
+	private LocalObject checkTouch(Movable test, Point target) {
+		for (LocalObject obj : this.localObjects) {
+			if (test == obj || !obj.is("Tight") || !test.is("Tight"))
+				continue; // skip self-check and non-tight objects check
+			double distance = obj.getCoordinate().distance(target.getX(),
+					target.getY());
+			if (distance < 20) {
+				System.err.println("Touch event " + test.getTypeName());
+				return obj;
+			}
+		}
+		return null;
 	}
 
 	private void drawMessage(String message) {

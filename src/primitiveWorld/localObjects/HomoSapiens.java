@@ -1,6 +1,7 @@
 package primitiveWorld.localObjects;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -14,10 +15,12 @@ import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.engine.event.Event;
 import primitiveWorld.interfaces.Drawable;
 import primitiveWorld.interfaces.EventListener;
+import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
 
-public class HomoSapiens implements Movable, Drawable, EventListener {
-
+public class HomoSapiens implements Movable, Drawable, EventListener, Tight {
+	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
 	private File file = new File("boy.png");
@@ -75,6 +78,8 @@ public class HomoSapiens implements Movable, Drawable, EventListener {
 		if (ability.equals("Active"))
 			return true;
 		if (ability.equals("Movable"))
+			return true;
+		if (ability.equals("Tight"))
 			return true;
 		return false;
 	}
@@ -168,6 +173,24 @@ public class HomoSapiens implements Movable, Drawable, EventListener {
 
 			break;
 		}
+
+	}
+
+	@Override
+	public Dimension getSize() {
+		// TODO Auto-generated method stub
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size = size;
+
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+		// TODO Auto-generated method stub
 
 	}
 

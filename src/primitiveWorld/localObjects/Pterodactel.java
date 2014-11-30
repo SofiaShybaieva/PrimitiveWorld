@@ -1,27 +1,38 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
+import primitiveWorld.engine.EventCollector;
+import primitiveWorld.engine.event.Command;
+import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Drawable;
+import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
+import primitiveWorld.interfaces.Visible;
+import primitiveWorld.interfaces.Watcher;
 
-public class Pterodactel implements Movable, Drawable {
+public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 
+	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
 	private File file = new File("pterodactel.png");
 	private String passRights = "";
 	private int nextX;
 	private int nextY;
-
+	Point pathPoints[] = null;
 	private int targetX, targetY;
 	private int oldX, oldY;
+	private int visibility = 100;
 
 	// private String ability = "Drawable Active Movable";
 
@@ -36,6 +47,12 @@ public class Pterodactel implements Movable, Drawable {
 
 	public Pterodactel() {
 		init();
+	}
+
+	public Pterodactel(int x, int y, String pathPoints) {
+		init();
+		this.coord.setLocation(x, y);
+
 	}
 
 	public Pterodactel(int x, int y) {
@@ -70,6 +87,10 @@ public class Pterodactel implements Movable, Drawable {
 			return true;
 		if (ability.equals("Movable"))
 			return true;
+		if (ability.equals("Visible"))
+			return true;
+		if (ability.equals("Tight"))
+			return true;
 		return false;
 	}
 
@@ -91,14 +112,6 @@ public class Pterodactel implements Movable, Drawable {
 
 	@Override
 	public void nextStep() {
-
-		// old version
-		// int maximum = 10;
-		// int minimum = -5;
-		// int randomNumX = minimum + (int) (Math.random() * maximum);
-		// int randomNumY = minimum + (int) (Math.random() * maximum);
-		// this.nextX = (int) (this.coord.getX() + randomNumX);
-		// this.nextY = (int) (this.coord.getY() + randomNumY);
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
@@ -150,6 +163,60 @@ public class Pterodactel implements Movable, Drawable {
 	public void setPassRights(String passRights) { // :)
 		this.passRights = passRights;
 
+	}
+
+	@Override
+	public int getVisibleRating() {
+
+		return this.visibility;
+	}
+
+	@Override
+	public void setVisibleRating(int visibleRating) {
+
+		this.visibility = visibleRating;
+	}
+
+	@Override
+	public int getContactRadius() {
+
+		return 60;
+	}
+
+	@Override
+	public void setContactRadius(int radius) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void atZone(Collection<Visible> objects) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Dimension getSize() {
+
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size.setSize(size);
+
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+
+		if (object.getTypeName().equals("Wolf")
+				|| object.getTypeName().equals("HomoSapiens")
+				|| object.getTypeName().equals("Snake")
+				|| object.getTypeName().equals("Krokodile")) {
+			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+					object));
+		}
 	}
 
 }

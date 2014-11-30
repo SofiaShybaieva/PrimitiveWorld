@@ -6,34 +6,32 @@ RRRRRRRRRRRRRRRRWWWWWWWWWWWWWW
 RRRRRRRRRRRRRCeeWWWWWWWWWWWWWW
 RRRRRRRRRRRFeeeeeWWWWWWWWWWWWW
 RRRRRRRRRRFFeeeeeeWWWWWWWWWWWW
-RRRRRRReeeFFFeeMeeeeWWWWWWWWWW
+RRRRRRReeeFFFeeeeeeeWWWWWWWWWW
 RRRRRReeeeeFFFeeeeeeeeWWWWWWWW
 RRRReeeeeeeFFFeeeeeeeeWWWWWWWW
 RRReeeeWWeeeeeeeeeeFeeeWWWWWWW
 FFeeeeWWWWeeeeeeeFFFFeeeWWWWWW
 FFeeeeWWWWeeeeeeFFFFFeeeeWWWWW
 FFeeeeWWWWeeeeeRRFFFeeeeeeeWWW
-MeeeeeeWeeeeeeRRRRFeeeeeeeeWWW
-MeeeeeeeeeeRRRRRRReeeeeeeeeeWW
-MeeeeeeRRRRRRRRRReeeeeeeeeeeWW
+MeeeeeeWeeeeeeeeeeFeeeeeeeeWWW
+MeeeeeeeeeeeeeeeeeeeeeeeeeeeWW
+MeeeeeeRRRRReeeeeeeeeeeeeeeeWW
 MMeeRRRRRRRRRRRReeeeeeeeeeeeWW
-MMeeRRRRRRRRRRReeeeeeeeeeeeeeW
-MMeeRRRRRRRRRReeeeFFeeeeeeeeeW
+MMeeRRRRRRRRRRRMeeeeeeeeeeeeeW
+MMeeRRRRRRRRRRMeeeFFeeeeeeeeeW
 MeeeeRRRRRRRReeeeFFFFeeeeeeRRR
 eeeeeFRRRRRRReeeFFFFFFeMeeRRRR
 eeeeeFFFFRRRReeeFFFFFMMMeeRRRR
 MeeeeeFFFFReeeeeeFFMMMMMeeeRRR
 MMeeeeeFFFFeeeeeeMMMMMMeeeeeRR
-MMMeeeeeeFeeeeMeeeMMeeeeeeeeRR
-MMeeeeeeeeeWWWMMMeeeeeMeeeeeFR
+MMMeeeeeeFeeeeFeeeeMeeeeeeeeRR
+MMeeeeeeeeeeeFMMMeeeeeMeeeeeFR
 MMeeeeeeeeWWWWWMMMeMMeeeeFFFFR
 MMeeeeeeWWWWWWWWWMeeMeeFFFFFFF
 MMMMMMMWWWWWWWWWWeeeMFFFFFFFFF
 MMMMMMMWWWWWWWWWWWFFFFFFFFFFFF
 LocalObjects
-11
-HomoSapiens
-70 530
+15
 HomoSapiens
 170 150
 Totem
@@ -41,16 +39,26 @@ Totem
 CampFire
 330 170
 Gopher
-210 190
+230 260
+Gopher
+230 225
+Gopher
+210 220
+Gopher
+120 265
 Gopher
 530 510
+HomoSapiens
+440 330
 Wolf
-210 190 210 269 290 210
+440 290 210 269 290 210
 Krokodile
-330 510 390 470 450 490 390 470
+260 480 390 470 450 490 390 470
 Pterodactel
 270 410 410 270 290 210
 Snake
 70 297
 Snake
 77 239
+Wolf
+97 290 210 269 290 210

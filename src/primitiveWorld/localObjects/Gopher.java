@@ -1,5 +1,6 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -12,10 +13,13 @@ import primitiveWorld.engine.EventCollector;
 import primitiveWorld.engine.event.Command;
 import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Drawable;
+import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
 
-public class Gopher implements Movable, Drawable {
+public class Gopher implements Movable, Drawable, Tight {
 
+	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
 	private File file = new File("gopher.png");
@@ -69,6 +73,8 @@ public class Gopher implements Movable, Drawable {
 	public boolean is(String ability) {
 		if (ability.equals("Drawable"))
 			return true;
+		if (ability.equals("Tight"))
+			return true;
 		if (ability.equals("Active"))
 			return true;
 		if (ability.equals("Movable"))
@@ -94,14 +100,6 @@ public class Gopher implements Movable, Drawable {
 
 	@Override
 	public void nextStep() {
-
-		// old version
-		// int maximum = 10;
-		// int minimum = -5;
-		// int randomNumX = minimum + (int) (Math.random() * maximum);
-		// int randomNumY = minimum + (int) (Math.random() * maximum);
-		// this.nextX = (int) (this.coord.getX() + randomNumX);
-		// this.nextY = (int) (this.coord.getY() + randomNumY);
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
@@ -161,6 +159,30 @@ public class Gopher implements Movable, Drawable {
 	public void setPassRights(String passRights) { // :)
 		this.passRights = passRights;
 
+	}
+
+	@Override
+	public Dimension getSize() {
+
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size.setSize(size);
+
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+		if (object.getTypeName().equals("Gopher")) {
+			// bounce away from other gophers
+			int deltaX, deltaY;
+			deltaX = -20 + (int) (Math.random() * 40);
+			deltaY = -20 + (int) (Math.random() * 40);
+			this.nextX += deltaX;
+			this.nextY += deltaY;
+		}
 	}
 
 }

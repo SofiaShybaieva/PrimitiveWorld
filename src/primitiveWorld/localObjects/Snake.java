@@ -1,5 +1,6 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -8,30 +9,29 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import primitiveWorld.engine.EventCollector;
+import primitiveWorld.engine.event.Command;
+import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Drawable;
+import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
+import primitiveWorld.interfaces.Visible;
 
-public class Snake implements Movable, Drawable {
-
+public class Snake implements Movable, Drawable, Tight, Visible {
+	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
 	private File file = new File("snake.png");
 	private String passRights = "";
-	private int nextX;
-	private int nextY;
-	private int counter;
-	private int targetX, targetY;
-	private int oldX, oldY;
-
+	private int visibility = 0;
 	// private String ability = "Drawable Active Movable";
 
 	private void init() {
 		this.setPassRights("");
 		this.coord = new Point();
 		this.coord.setLocation(0, 0);
-		this.targetX = this.targetY = this.nextX = this.nextY = this.oldX = this.oldY = 0;
 		loadImage(file);
-		counter = 0;
 	}
 
 	public Snake() {
@@ -70,6 +70,10 @@ public class Snake implements Movable, Drawable {
 			return true;
 		if (ability.equals("Movable"))
 			return true;
+		if (ability.equals("Tight"))
+			return true;
+		if (ability.equals("Visible"))
+			return true;
 		return false;
 	}
 
@@ -96,7 +100,7 @@ public class Snake implements Movable, Drawable {
 
 	@Override
 	public Point getStepTarget() {
-		Point p = new Point(this.nextX, this.nextY);
+		Point p = new Point(0, 0);
 		return p;
 	}
 
@@ -114,6 +118,40 @@ public class Snake implements Movable, Drawable {
 	public void setPassRights(String passRights) { // :)
 		this.passRights = passRights;
 
+	}
+
+	@Override
+	public Dimension getSize() {
+
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size.setSize(size);
+
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+
+		if (object.getTypeName().equals("Wolf")
+				|| object.getTypeName().equals("HomoSapiens")) {
+			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+					object));
+		}
+	}
+
+	@Override
+	public int getVisibleRating() {
+
+		return this.visibility;
+	}
+
+	@Override
+	public void setVisibleRating(int visibleRating) {
+
+		this.visibility = visibleRating;
 	}
 
 }
