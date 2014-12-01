@@ -69,13 +69,13 @@ public class CampFire implements Active, Drawable {
 
 	@Override
 	public Point getCoordinate() {
-		// TODO Auto-generated method stub
-		return null;
+
+		return this.coord;
 	}
 
 	@Override
 	public void setCoordinate(Point coord) {
-		// TODO Auto-generated method stub
+		this.coord = coord;
 
 	}
 

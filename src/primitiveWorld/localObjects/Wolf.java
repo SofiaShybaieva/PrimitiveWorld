@@ -16,8 +16,9 @@ import primitiveWorld.interfaces.Drawable;
 import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
 import primitiveWorld.interfaces.Tight;
+import primitiveWorld.interfaces.Visible;
 
-public class Wolf implements Movable, Drawable, Tight {
+public class Wolf implements Movable, Drawable, Tight, Visible {
 
 	private Dimension size = new Dimension(20, 20);
 	private Point coord;
@@ -172,6 +173,18 @@ public class Wolf implements Movable, Drawable, Tight {
 		EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 				object));
 		}
+
+	}
+
+	@Override
+	public int getVisibleRating() {
+		// TODO Auto-generated method stub
+		return 100;
+	}
+
+	@Override
+	public void setVisibleRating(int visibleRating) {
+		// TODO Auto-generated method stub
 
 	}
 

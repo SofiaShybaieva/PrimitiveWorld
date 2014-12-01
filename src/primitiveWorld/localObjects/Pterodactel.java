@@ -33,7 +33,7 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	private int targetX, targetY;
 	private int oldX, oldY;
 	private int visibility = 100;
-
+	private int contactRadius = 60;
 	// private String ability = "Drawable Active Movable";
 
 	private void init() {
@@ -90,6 +90,8 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 		if (ability.equals("Visible"))
 			return true;
 		if (ability.equals("Tight"))
+			return true;
+		if (ability.equals("Watcher"))
 			return true;
 		return false;
 	}
@@ -180,19 +182,24 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	@Override
 	public int getContactRadius() {
 
-		return 60;
+		return this.contactRadius;
 	}
 
 	@Override
 	public void setContactRadius(int radius) {
-		// TODO Auto-generated method stub
+		this.contactRadius = radius;
 
 	}
 
 	@Override
 	public void atZone(Collection<Visible> objects) {
-		// TODO Auto-generated method stub
-
+		if (objects.isEmpty())
+			return;
+		System.err.print("atZone: ");
+		for (Visible t : objects) {
+			System.err.print(t.getTypeName() + " ");
+		}
+		System.err.println("");
 	}
 
 	@Override

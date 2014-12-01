@@ -8,6 +8,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JPanel;
@@ -24,6 +25,8 @@ import primitiveWorld.interfaces.Enginable;
 import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
 import primitiveWorld.interfaces.Tight;
+import primitiveWorld.interfaces.Visible;
+import primitiveWorld.interfaces.Watcher;
 import primitiveWorld.location.Location;
 import primitiveWorld.location.LocationLoader;
 import primitiveWorld.location.WrongFileFormat;
@@ -99,35 +102,8 @@ public class Engine implements Enginable {
 		graphics.drawImage(bufferedImage, 0, 0, null);
 	}
 
-	@Override
-	public String nextStep() {
-		String ret = null;
-		for (LocalObject t : this.localObjects) {
-			if (t.is("Active") != true)
-				continue;
-			((Active) t).nextStep();
-			if (t.is("Movable") != true)
-				continue;
-			// lab 11 - check if current object t touches any other object, if
-			// so, then do not move
-
-			Point target = ((Movable) t).getStepTarget();
-			LocalObject touched = checkTouch((Movable) t, target);
-			if (touched != null) // if touch event
-				{
-				 ((Tight)touched).touch(t);
-				 ((Tight)t).touch(touched);
-				}
-
-			if (target != t.getCoordinate()) {
-				if (location.isCanMove((Movable) t)) {
-					((Movable) t).moveTo(((Movable) t).getStepTarget());
-				}
-
-			}
-		} // for
-
-		// lab 10
+	// process the queue of events and forward events to the
+	private void processEvents() {
 		globalEventsMessages = "";
 		while (true) {
 			Event event = eventCollector.getEvent();
@@ -155,6 +131,58 @@ public class Engine implements Enginable {
 		if (globalEventsMessages.isEmpty() != true) {
 			drawMessage(globalEventsMessages);
 		}
+
+	}
+
+	// nextStep, touch and moveTo for all local objects
+	private void moveLocalObjects() {
+		for (LocalObject t : this.localObjects) {
+			if (t.is("Active") != true)
+				continue;
+			((Active) t).nextStep();
+			if (t.is("Movable") != true)
+				continue;
+			// lab 11 - check if current object t touches any other object, if
+			// so, then do not move
+
+			Point target = ((Movable) t).getStepTarget();
+			LocalObject touched = checkTouch((Movable) t, target);
+			if (touched != null) // if touch event
+			{
+				((Tight) touched).touch(t);
+				((Tight) t).touch(touched);
+			}
+
+			if (target != t.getCoordinate()) {
+				if (location.isCanMove((Movable) t)) {
+					((Movable) t).moveTo(((Movable) t).getStepTarget());
+				}
+
+			}
+		} // for
+
+		// after the objects are moved, process the watchers
+		for (LocalObject t0 : this.localObjects) {
+			if (t0.is("Watcher") != true) // loop only watchers
+				continue;
+			int radius = ((Watcher) t0).getContactRadius();
+			Point p0 = t0.getCoordinate();
+			Collection<Visible> atZone = new ArrayList<Visible>();
+			for (LocalObject t : this.localObjects) {
+				if (t == t0 || t.is("Visible") == false)
+					continue; // skip the self-watch and non-visible objects
+				Point p = t.getCoordinate();
+				if (p.distance(p0) <= radius)
+					atZone.add((Visible) t);
+			}
+			((Watcher) t0).atZone(atZone);
+		}
+	}
+
+	@Override
+	public String nextStep() {
+		moveLocalObjects();
+		processEvents();
 		return globalEventsMessages;
 	}
 
@@ -165,7 +193,7 @@ public class Engine implements Enginable {
 			double distance = obj.getCoordinate().distance(target.getX(),
 					target.getY());
 			if (distance < 20) {
-				System.err.println("Touch event " + test.getTypeName());
+				// System.err.println("Touch event " + test.getTypeName());
 				return obj;
 			}
 		}
@@ -182,6 +210,7 @@ public class Engine implements Enginable {
 		}
 	}
 
+	// process required command
 	private void processCommand(CommandEvent event) {
 		Command command = event.getCommand();
 		switch (command) {
