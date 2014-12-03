@@ -1,10 +1,13 @@
 package primitiveWorld.location;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
+
+
 
 import primitiveWorld.engine.EventCollector;
 import primitiveWorld.interfaces.LocalObject;
@@ -83,11 +86,16 @@ public class LocationLoader {
 				String type = input.nextLine();
 				String argsLine = input.nextLine();
 				String[] args = argsLine.split(" ");
-				int x = Integer.parseInt(args[0]);
-				int y = Integer.parseInt(args[1]);
+				Collection<Point> points = new ArrayList<Point>();
+				for (int k = 0; k < args.length; k += 2) {
+					int x = Integer.parseInt(args[0 + k]);
+					int y = Integer.parseInt(args[1 + k]);
+					Point p = new Point(x,y);
+					points.add(p);
+				}
 				// input.nextLine();
 				LocalObject localObject = LocalObjectsFactory.buildLocalObject(
-						type, argsLine);
+						type, points);
 				localObjectsList.add(localObject);
 
 			} // for i

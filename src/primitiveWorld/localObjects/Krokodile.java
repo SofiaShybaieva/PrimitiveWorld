@@ -1,10 +1,13 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -12,9 +15,13 @@ import primitiveWorld.engine.EventCollector;
 import primitiveWorld.engine.event.Command;
 import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Drawable;
+import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
+import primitiveWorld.interfaces.Tight;
+import primitiveWorld.interfaces.Visible;
+import primitiveWorld.interfaces.Watcher;
 
-public class Krokodile implements Movable, Drawable {
+public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	private Point coord;
 	private Image image;
@@ -25,8 +32,10 @@ public class Krokodile implements Movable, Drawable {
 	private int counter;
 	private int targetX, targetY;
 	private int oldX, oldY;
-
-	// private String ability = "Drawable Active Movable";
+	private Dimension size = new Dimension(20,20);
+	private int visibility=100;
+	private int contactRadius=50;
+	private Collection<Point> patrol = null;
 
 	private void init() {
 		this.setPassRights("");
@@ -46,7 +55,15 @@ public class Krokodile implements Movable, Drawable {
 		this.coord.setLocation(x, y);
 
 	}
+	public Krokodile(int x, int y, String args) {
+		init();
+		this.coord.setLocation(x, y);
+		patrol = new ArrayList<Point>();
+		args.split
+		patrol.add(new Point ())
+		//patrol = new Point[] ();
 
+	}
 	@Override
 	public String getTypeName() {
 
@@ -73,6 +90,12 @@ public class Krokodile implements Movable, Drawable {
 			return true;
 		if (ability.equals("Movable"))
 			return true;
+		if (ability.equals("Watcher"))
+			return true;
+		if (ability.equals("Visible"))
+			return true;
+		if (ability.equals("Tight"))
+			return true;
 		return false;
 	}
 
@@ -94,14 +117,6 @@ public class Krokodile implements Movable, Drawable {
 
 	@Override
 	public void nextStep() {
-
-		// old version
-		// int maximum = 10;
-		// int minimum = -5;
-		// int randomNumX = minimum + (int) (Math.random() * maximum);
-		// int randomNumY = minimum + (int) (Math.random() * maximum);
-		// this.nextX = (int) (this.coord.getX() + randomNumX);
-		// this.nextY = (int) (this.coord.getY() + randomNumY);
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
@@ -161,6 +176,59 @@ public class Krokodile implements Movable, Drawable {
 	public void setPassRights(String passRights) { // :)
 		this.passRights = passRights;
 
+	}
+
+
+
+	@Override
+	public void atZone(Collection<Visible> objects) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getVisibleRating() {
+
+		return this.visibility;
+	}
+
+	@Override
+	public void setVisibleRating(int visibleRating) {
+
+		this.visibility = visibleRating;
+	}
+
+	@Override
+	public int getContactRadius() {
+
+		return this.contactRadius;
+	}
+
+	@Override
+	public void setContactRadius(int radius) {
+		this.contactRadius = radius;
+
+	}
+
+	@Override
+	public Dimension getSize() {
+		
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size.setSize(size);
+
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+		if (object.getTypeName().equals("HomoSapiens")
+				|| object.getTypeName().equals("Wolf")) {
+			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+					object));
+		}
 	}
 
 }

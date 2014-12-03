@@ -34,7 +34,13 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	private int oldX, oldY;
 	private int visibility = 100;
 	private int contactRadius = 60;
-	// private String ability = "Drawable Active Movable";
+
+	private static enum Speed {
+		slow, fast
+	}
+
+	private Speed speed = Speed.slow;
+
 
 	private void init() {
 		this.setPassRights("f");
@@ -128,8 +134,9 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 			this.targetY = (int) (Math.random() * 600);
 		}
 
-		int stepX = (int) (1 + Math.random() * 5);
-		int stepY = (int) (1 + Math.random() * 5);
+		int step = (this.speed == Speed.fast ? 8 : 4);
+		int stepX = (int) (1 + Math.random() * step);
+		int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 
@@ -195,13 +202,30 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	public void atZone(Collection<Visible> objects) {
 		if (objects.isEmpty())
 			return;
-		System.err.print("atZone: ");
+
 		for (Visible t : objects) {
-			System.err.print(t.getTypeName() + " ");
+			// order of the checks is: HomoSapiens, Wolf (decreasing
+			// value of catching  the object)
+			if (t.getTypeName().equals("HomoSapiens")) {
+				this.speed = Speed.fast;
+				this.targetX = (int) t.getCoordinate().getX();
+				this.targetY = (int) t.getCoordinate().getY();
+				System.err.println("Pterodactel is Targeting HomoSapiens!");
+				break;
+			}
+			if (t.getTypeName().equals("Wolf")) {
+				this.speed = Speed.fast;
+				this.targetX = (int) t.getCoordinate().getX();
+				this.targetY = (int) t.getCoordinate().getY();
+				System.err.println("Pterodactel is Targeting Wolf!");
+				break;
+			}
+
 		}
-		System.err.println("");
+
 	}
 
+	
 	@Override
 	public Dimension getSize() {
 
@@ -217,12 +241,14 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	@Override
 	public void touch(LocalObject object) {
 
+		// eat (remove) 4 types of objects when in touch
 		if (object.getTypeName().equals("Wolf")
 				|| object.getTypeName().equals("HomoSapiens")
 				|| object.getTypeName().equals("Snake")
 				|| object.getTypeName().equals("Krokodile")) {
 			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 					object));
+			this.speed = Speed.slow;
 		}
 	}
 

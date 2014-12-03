@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -17,9 +18,11 @@ import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
 import primitiveWorld.interfaces.Tight;
 import primitiveWorld.interfaces.Visible;
+import primitiveWorld.interfaces.Watcher;
 
-public class Wolf implements Movable, Drawable, Tight, Visible {
+public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
+	private static enum Speed {slow,fast}
 	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
@@ -30,8 +33,11 @@ public class Wolf implements Movable, Drawable, Tight, Visible {
 
 	private int targetX, targetY;
 	private int oldX, oldY;
+	
+	private int visibility = 100;
+	private int contactRadius = 50;
+	private Speed speed;
 
-	// private String ability = "Drawable Active Movable";
 
 	private void init() {
 		this.setPassRights("");
@@ -81,6 +87,10 @@ public class Wolf implements Movable, Drawable, Tight, Visible {
 			return true;
 		if (ability.equals("Movable"))
 			return true;
+		if (ability.equals("Watcher"))
+			return true;
+		if (ability.equals("Visible"))
+			return true;
 		return false;
 	}
 
@@ -116,8 +126,9 @@ public class Wolf implements Movable, Drawable, Tight, Visible {
 			this.targetY = (int) (Math.random() * 600);
 		}
 
-		int stepX = (int) (1 + Math.random() * 5);
-		int stepY = (int) (1 + Math.random() * 5);
+		int step = (this.speed == Speed.fast ? 4 : 2);
+		int stepX = (int) (1 + Math.random() * step);
+		int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 
@@ -187,5 +198,67 @@ public class Wolf implements Movable, Drawable, Tight, Visible {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public int getContactRadius() {
+		 
+		return this.contactRadius;
+	}
+
+	@Override
+	public void setContactRadius(int radius) {
+		this.contactRadius = radius;
+		
+	}
+
+	@Override
+	public void atZone(Collection<Visible> objects) {
+		if (objects.isEmpty()) {
+			this.speed = Speed.slow;  // restore slow speed after all objects gone from visibility
+			return;
+		}
+		for (Visible t : objects) {
+			// order of the checks is: Pterodactel, Wolf, HomoSapiens, (decreasing
+			// danger)
+			
+			if (t.getTypeName().equals("Pterodactel")) {
+				this.speed = Speed.fast;
+
+				Point runAway = getRunAwayCoord(t.getCoordinate());
+				this.targetX = (int) runAway.getX();
+				this.targetY = (int) runAway.getY();
+
+				System.err.println("Pterodactel is Approaching Wolf!");
+				break;
+			}
+			if (t.getTypeName().equals("Wolf")) {
+				this.speed = Speed.fast;
+				Point runAway = getRunAwayCoord(t.getCoordinate());
+				this.targetX = (int) runAway.getX();
+				this.targetY = (int) runAway.getY();
+				System.err.println("Pterodactel is Approaching Wolf!");
+				break;
+			}
+			if (t.getTypeName().equals("HomoSapiens")) {
+				this.speed = Speed.fast;
+				// targeting HomoSapiens object
+				this.targetX = (int) t.getCoordinate().getX();
+				this.targetY = (int) t.getCoordinate().getY();
+				System.err.println("Wolf is Targeting HomoSapiens!");
+				break;
+			}
+
+		}
+		
+	}
+	
+	// calculate the run away point when a monster is approaching at coordinate
+	private Point getRunAwayCoord(Point coordinate) {
+		Point p = new Point();
+		p.x = (this.coord.x - coordinate.x) + this.coord.x;
+		p.y = (this.coord.y - coordinate.y) + this.coord.y;
+		return p;
+	}
+
 
 }

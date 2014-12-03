@@ -1,10 +1,13 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Point;
+import java.util.Collection;
+
 import primitiveWorld.interfaces.LocalObject;
 
 public class LocalObjectsFactory {
 	public static LocalObject buildLocalObject(String className,
-			String arguments) {
+			Collection<Point> points) {
 		String[] args = arguments.split(" ");
 		int x = Integer.parseInt(args[0]);
 		int y = Integer.parseInt(args[1]);

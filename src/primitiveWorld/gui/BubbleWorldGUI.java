@@ -107,7 +107,7 @@ public class BubbleWorldGUI extends JFrame {
 						PrimitiveWorld.redraw();
 					}
 				});
-		timer = new Timer(200, new ActionListener() {
+		timer = new Timer(300, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// System.out.println(PrimitiveWorld.nextStep());

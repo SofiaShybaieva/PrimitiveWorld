@@ -172,7 +172,7 @@ public class Engine implements Enginable {
 				if (t == t0 || t.is("Visible") == false)
 					continue; // skip the self-watch and non-visible objects
 				Point p = t.getCoordinate();
-				if (p.distance(p0) <= radius)
+				if (p.distance(p0) <= radius && ((Visible)t).getVisibleRating()>0)
 					atZone.add((Visible) t);
 			}
 			((Watcher) t0).atZone(atZone);
