@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
 
-
-
 import primitiveWorld.engine.EventCollector;
 import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.landscapes.Cave;
@@ -86,11 +84,11 @@ public class LocationLoader {
 				String type = input.nextLine();
 				String argsLine = input.nextLine();
 				String[] args = argsLine.split(" ");
-				Collection<Point> points = new ArrayList<Point>();
+				ArrayList<Point> points = new ArrayList<Point>();
 				for (int k = 0; k < args.length; k += 2) {
 					int x = Integer.parseInt(args[0 + k]);
 					int y = Integer.parseInt(args[1 + k]);
-					Point p = new Point(x,y);
+					Point p = new Point(x, y);
 					points.add(p);
 				}
 				// input.nextLine();

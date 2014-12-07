@@ -40,12 +40,12 @@ public class Water implements Landscape {
 
 	@Override
 	public boolean isCanEnterOn(Movable traveler) {
-		String rights = traveler.getPassRights();
-		if (rights.contains("f"))
+		//String rights = traveler.getPassRights();
+		//if (rights.contains("f"))
+		//	return true;
+		//if (rights.contains("s"))
 			return true;
-		if (rights.contains("s"))
-			return true;
-		return false;
+		//return false;
 	}
 
 	@Override
@@ -55,9 +55,8 @@ public class Water implements Landscape {
 			return true;
 		if (rights.contains("s"))
 			return true;
-		EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
-				traveler));
+		//EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+		//		traveler));
 		return false;
 	}
-
 }

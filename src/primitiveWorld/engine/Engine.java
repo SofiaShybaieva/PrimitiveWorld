@@ -110,7 +110,7 @@ public class Engine implements Enginable {
 			if (event == null)
 				break;
 
-			eventCollector.eventOccurred(event);
+			EventCollector.eventOccurred(event);
 
 			if (event.getType() == EventType.Global) {
 				GlobalEvent globalEvent = (GlobalEvent) event;
@@ -151,7 +151,7 @@ public class Engine implements Enginable {
 			{
 				((Tight) touched).touch(t);
 				((Tight) t).touch(touched);
-			}
+			} // else // ДОБАВЛЕНО ТОЛЬКО ELSE!!!
 
 			if (target != t.getCoordinate()) {
 				if (location.isCanMove((Movable) t)) {

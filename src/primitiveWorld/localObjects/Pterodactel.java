@@ -1,11 +1,13 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
@@ -29,7 +31,9 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	private String passRights = "";
 	private int nextX;
 	private int nextY;
-	Point pathPoints[] = null;
+	// Point pathPoints[] = null;
+	private ArrayList<Point> patrol = null;
+	private int currentPoint = 0;
 	private int targetX, targetY;
 	private int oldX, oldY;
 	private int visibility = 100;
@@ -41,12 +45,14 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 
 	private Speed speed = Speed.slow;
 
-
 	private void init() {
 		this.setPassRights("f");
 		this.coord = new Point();
 		this.coord.setLocation(0, 0);
-		this.targetX = this.targetY = this.nextX = this.nextY = this.oldX = this.oldY = 0;
+		this.targetX = this.targetY = this.nextX = this.nextY = 0;// = this.oldX
+																	// =
+																	// this.oldY
+																	// = 0;
 		loadImage(file);
 
 	}
@@ -55,10 +61,12 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 		init();
 	}
 
-	public Pterodactel(int x, int y, String pathPoints) {
+	public Pterodactel(int x, int y, ArrayList<Point> points) {
 		init();
 		this.coord.setLocation(x, y);
-
+		this.patrol = points;
+		this.targetX = this.nextX = this.coord.x;
+		this.targetY = this.nextY = this.coord.y;
 	}
 
 	public Pterodactel(int x, int y) {
@@ -105,8 +113,21 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	@Override
 	public void draw(Graphics g) {
 
-		// g.setColor(Color.WHITE);
-		// g.fillRect(this.coord.x, this.coord.y, 20, 20);
+		g.setColor(Color.YELLOW);
+		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+				- this.contactRadius, this.contactRadius * 2,
+				this.contactRadius * 2, 0, 360);
+		// display patrol points
+//		for (int i = 0; i < patrol.size(); i++) {
+//			if (i == this.currentPoint)
+//				g.setColor(Color.RED);
+//			else
+//				g.setColor(Color.GREEN);
+//			g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
+//			g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
+//					patrol.get(i).y);
+//		}
+
 		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
 	}
 
@@ -123,20 +144,26 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
-		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
+		if (this.oldX == this.coord.x && this.oldY == this.coord.y) { 
+			this.currentPoint = (int) (Math.random()*this.patrol.size());
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
+
 		}
 
 		// target point reached, make new random target point
 		if (this.targetX == this.coord.x && this.targetY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
-		}
+			if (this.currentPoint < patrol.size() - 1)
+				this.currentPoint++;
+			else
+				this.currentPoint = 0;
 
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
+		}
 		int step = (this.speed == Speed.fast ? 8 : 4);
-		int stepX = (int) (1 + Math.random() * step);
-		int stepY = (int) (1 + Math.random() * step);
+		// int stepX = (int) (1 + Math.random() * step);
+		// int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 
@@ -145,11 +172,11 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 										// +1)
 		int dy = this.targetY - y0;
 		int signY = Integer.signum(dy);
-		this.nextX = x0 + stepX * signX;
-		this.nextY = y0 + stepY * signY;
+		this.nextX = x0 + step * signX;
+		this.nextY = y0 + step * signY;
 		this.oldX = this.coord.x;
 		this.oldY = this.coord.y;
-
+		// System.err.println("targetX,targetY "+targetX+" "+targetY);
 	}
 
 	@Override
@@ -200,32 +227,35 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 
 	@Override
 	public void atZone(Collection<Visible> objects) {
-		if (objects.isEmpty())
+		if (objects.isEmpty()) {
+			this.speed = Speed.slow;
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
 			return;
+		}
 
 		for (Visible t : objects) {
 			// order of the checks is: HomoSapiens, Wolf (decreasing
-			// value of catching  the object)
+			// value of catching the object)
 			if (t.getTypeName().equals("HomoSapiens")) {
 				this.speed = Speed.fast;
 				this.targetX = (int) t.getCoordinate().getX();
 				this.targetY = (int) t.getCoordinate().getY();
-				System.err.println("Pterodactel is Targeting HomoSapiens!");
+				// System.err.println("Pterodactel is Targeting HomoSapiens!");
 				break;
 			}
 			if (t.getTypeName().equals("Wolf")) {
 				this.speed = Speed.fast;
 				this.targetX = (int) t.getCoordinate().getX();
 				this.targetY = (int) t.getCoordinate().getY();
-				System.err.println("Pterodactel is Targeting Wolf!");
+
+				// System.err.println("Pterodactel is Targeting Wolf!");
 				break;
 			}
 
 		}
-
 	}
 
-	
 	@Override
 	public Dimension getSize() {
 
@@ -235,7 +265,6 @@ public class Pterodactel implements Movable, Drawable, Visible, Watcher, Tight {
 	@Override
 	public void setSize(Dimension size) {
 		this.size.setSize(size);
-
 	}
 
 	@Override

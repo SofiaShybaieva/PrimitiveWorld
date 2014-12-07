@@ -1,16 +1,16 @@
 package primitiveWorld.localObjects;
 
 import java.awt.Point;
-import java.util.Collection;
+import java.util.ArrayList;
 
 import primitiveWorld.interfaces.LocalObject;
 
 public class LocalObjectsFactory {
 	public static LocalObject buildLocalObject(String className,
-			Collection<Point> points) {
-		String[] args = arguments.split(" ");
-		int x = Integer.parseInt(args[0]);
-		int y = Integer.parseInt(args[1]);
+			ArrayList<Point> points) {
+		
+		int x = points.get(0).x;
+		int y = points.get(0).y;
 		switch (className) {
 		case "Gopher":
 			Gopher gopher = new Gopher(x, y);
@@ -25,16 +25,16 @@ public class LocalObjectsFactory {
 			CampFire campFire = new CampFire(x, y);
 			return campFire;
 		case "Krokodile":
-			Krokodile krokodile = new Krokodile(x, y);
+			Krokodile krokodile = new Krokodile(x, y, points);
 			return krokodile;
 		case "Snake":
 			Snake snake = new Snake(x, y);
 			return snake;
 		case "Wolf":
-			Wolf wolf = new Wolf(x, y);
+			Wolf wolf = new Wolf(x, y, points);
 			return wolf;
 		case "Pterodactel":
-			Pterodactel pterodactel = new Pterodactel(x, y);
+			Pterodactel pterodactel = new Pterodactel(x, y, points);
 			return pterodactel;
 
 		}

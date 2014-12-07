@@ -7,7 +7,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.imageio.ImageIO;
 
@@ -20,9 +19,9 @@ import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
 import primitiveWorld.interfaces.Tight;
 import primitiveWorld.interfaces.Visible;
-import primitiveWorld.interfaces.Watcher;
 
-public class HomoSapiens implements Movable, Drawable, EventListener, Visible, Tight {
+public class HomoSapiens implements Movable, Drawable, EventListener, Visible,
+		Tight {
 	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
@@ -32,7 +31,7 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible, T
 	private int nextY;
 	private int targetX, targetY;
 	boolean isUnderControl;
-	private int visibility=0;
+	private int visibility = 0;
 
 	// private String ability = "Drawable Active Movable";
 
@@ -127,7 +126,6 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible, T
 		this.nextX = x0 + step * signX;
 		this.nextY = y0 + step * signY;
 
-		
 	}
 
 	@Override
@@ -169,49 +167,57 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible, T
 		case "comand.mousePress":
 			if (p.distance(p0.x, p0.y) < 20)
 				this.changeUnderControl();
-			
 
 			break;
 		}
 
 	}
 
-
-	private void changeUnderControl ()
-	{
+	private void changeUnderControl() {
 		this.isUnderControl = !this.isUnderControl;
-		if (this.isUnderControl) this.visibility = 100; else this.visibility = 0;
-		System.err.println("UnderControl=" + this.isUnderControl + ", visibility=" + this.visibility);
+		if (this.isUnderControl)
+			this.visibility = 100;
+		else
+			this.visibility = 0;
+		// System.err.println("UnderControl=" + this.isUnderControl +
+		// ", visibility=" + this.visibility);
 	}
 
 	@Override
 	public int getVisibleRating() {
-		
+
 		return this.visibility;
 	}
 
 	@Override
 	public void setVisibleRating(int visibleRating) {
 		this.visibility = visibleRating;
-		
+
 	}
 
 	@Override
 	public Dimension getSize() {
 		// TODO Auto-generated method stub
-		return new Dimension(20,20);
+		return new Dimension(20, 20);
 	}
 
 	@Override
 	public void setSize(Dimension size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void touch(LocalObject object) {
-		// TODO Auto-generated method stub
-		
+		if (object.getTypeName().equals("HomoSapiens")) {
+			// bounce away from other homo sapiens
+			int deltaX, deltaY;
+			deltaX = -5 + (int) (Math.random() * 10);
+			deltaY = -5 + (int) (Math.random() * 10);
+			this.nextX += deltaX;
+			this.nextY += deltaY;
+		}
+
 	}
 
 }

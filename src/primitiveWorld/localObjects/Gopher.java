@@ -30,7 +30,6 @@ public class Gopher implements Movable, Drawable, Tight {
 	private int targetX, targetY;
 	private int oldX, oldY;
 
-	// private String ability = "Drawable Active Movable";
 
 	private void init() {
 		this.setPassRights("");
@@ -178,10 +177,12 @@ public class Gopher implements Movable, Drawable, Tight {
 		if (object.getTypeName().equals("Gopher")) {
 			// bounce away from other gophers
 			int deltaX, deltaY;
-			deltaX = -20 + (int) (Math.random() * 40);
-			deltaY = -20 + (int) (Math.random() * 40);
+			deltaX = -5 + (int) (Math.random() * 10);
+			deltaY = -5 + (int) (Math.random() * 10);
 			this.nextX += deltaX;
 			this.nextY += deltaY;
+			
+			
 		}
 	}
 

@@ -1,5 +1,6 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -29,21 +30,23 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	private String passRights = "";
 	private int nextX;
 	private int nextY;
-	private int counter;
 	private int targetX, targetY;
 	private int oldX, oldY;
-	private Dimension size = new Dimension(20,20);
-	private int visibility=100;
-	private int contactRadius=50;
-	private Collection<Point> patrol = null;
+	private Dimension size = new Dimension(20, 20);
+	private int visibility = 100;
+	private int contactRadius = 50;
+	private ArrayList<Point> patrol = null;
+	private int speed = 0;
+	private int currentPoint = 0;
+	private int ticks = 0;
 
 	private void init() {
-		this.setPassRights("");
+		this.setPassRights("m");
 		this.coord = new Point();
 		this.coord.setLocation(0, 0);
 		this.targetX = this.targetY = this.nextX = this.nextY = this.oldX = this.oldY = 0;
 		loadImage(file);
-		counter = 0;
+
 	}
 
 	public Krokodile() {
@@ -55,15 +58,17 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 		this.coord.setLocation(x, y);
 
 	}
-	public Krokodile(int x, int y, String args) {
+
+	public Krokodile(int x, int y, ArrayList<Point> points) {
 		init();
 		this.coord.setLocation(x, y);
-		patrol = new ArrayList<Point>();
-		args.split
-		patrol.add(new Point ())
-		//patrol = new Point[] ();
+		this.patrol = points;
 
+		this.currentPoint = 0;
+		this.targetX = this.patrol.get(currentPoint).x;
+		this.targetY = this.patrol.get(currentPoint).y;
 	}
+
 	@Override
 	public String getTypeName() {
 
@@ -102,9 +107,25 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void draw(Graphics g) {
 
-		// g.setColor(Color.WHITE);
-		// g.fillRect(this.coord.x, this.coord.y, 20, 20);
-		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
+		g.setColor(Color.GREEN);
+		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+				- this.contactRadius, this.contactRadius * 2,
+				this.contactRadius * 2, 0, 360);
+
+		// display patrol points
+		// for (int i = 0; i < patrol.size(); i++) {
+		// if (i == this.currentPoint)
+		// g.setColor(Color.RED);
+		// else
+		// g.setColor(Color.GREEN);
+		// g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
+		// g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
+		// patrol.get(i).y);
+		// }
+
+		if (this.speed > 0)
+			g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20,
+					null);
 	}
 
 	private void loadImage(File file) {
@@ -117,22 +138,35 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	@Override
 	public void nextStep() {
-
+		this.ticks++;
+		if (ticks < 30)
+			return;
+		this.speed = 2;
 		// no move was possible after last step, direction is blocked, make new
 		// target
 		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
+			// this.targetX = (int) (Math.random() * 800);
+			// this.targetY = (int) (Math.random() * 600);
+			this.currentPoint = (int) (Math.random() * this.patrol.size());
+
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
 		}
 
-		// target point reached, make new random target point
+		// target point reached, make new target point from the partol list
 		if (this.targetX == this.coord.x && this.targetY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
+			if (this.currentPoint < patrol.size() - 1)
+				this.currentPoint++;
+			else
+				this.currentPoint = 0;
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
+			this.speed = 0;
+			this.ticks = 0;
 		}
 
-		int stepX = (int) (1 + Math.random() * 5);
-		int stepY = (int) (1 + Math.random() * 5);
+		int stepX = (int) (1 + Math.random() * speed);
+		int stepY = (int) (1 + Math.random() * speed);
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 
@@ -145,15 +179,7 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 		this.nextY = y0 + stepY * signY;
 		this.oldX = this.coord.x;
 		this.oldY = this.coord.y;
-		counter++;
-		int rnd = (int) (90 + Math.random() * 20); // liveability
-		if (counter % rnd == 0) {
-			counter = 0;
-			int x = this.coord.x;
-			int y = this.coord.y;
-			EventCollector.addEvent(new CommandEvent(Command.addLocalObject,
-					new Gopher(x, y)));
-		}
+
 	}
 
 	@Override
@@ -178,11 +204,40 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	}
 
-
-
 	@Override
 	public void atZone(Collection<Visible> objects) {
-		// TODO Auto-generated method stub
+		if (objects.isEmpty()) {
+			//this.speed = 2;
+			return;
+		}
+
+		for (Visible t : objects) {
+			// hide when other objects are approaching
+			if (t.getTypeName().equals("HomoSapiens")
+					|| t.getTypeName().equals("Wolf")
+					|| t.getTypeName().equals("Pterodactel")) {
+
+				int distance = (int) t.getCoordinate().distance(this.coord);
+
+				// attack closes object
+				if (distance<=30) {
+					this.targetX = (int) t.getCoordinate().getX();
+					this.targetY = (int) t.getCoordinate().getY();
+					this.speed=2;
+					//System.err.println("Wolf is Targeting an object - " + t.getClass());
+					break;
+				}
+				// hide and allow objects to come closer
+				if (distance > 30) {
+					this.speed = 0;
+					//this.ticks --;
+					//System.err.println("Krokodile is hiding!");
+					break;
+				}
+				break;
+			}
+
+		}
 
 	}
 
@@ -212,7 +267,7 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	@Override
 	public Dimension getSize() {
-		
+
 		return this.size;
 	}
 

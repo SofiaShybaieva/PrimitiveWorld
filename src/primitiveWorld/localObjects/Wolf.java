@@ -1,11 +1,13 @@
 package primitiveWorld.localObjects;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.imageio.ImageIO;
@@ -22,7 +24,10 @@ import primitiveWorld.interfaces.Watcher;
 
 public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
-	private static enum Speed {slow,fast}
+	private static enum Speed {
+		slow, fast
+	}
+
 	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
@@ -33,11 +38,12 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
 	private int targetX, targetY;
 	private int oldX, oldY;
-	
+
 	private int visibility = 100;
 	private int contactRadius = 50;
 	private Speed speed;
-
+	private ArrayList<Point> patrol = null;
+	private int currentPoint=0;
 
 	private void init() {
 		this.setPassRights("");
@@ -53,9 +59,14 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 		init();
 	}
 
-	public Wolf(int x, int y) {
+	public Wolf(int x, int y, ArrayList<Point> points) {
 		init();
 		this.coord.setLocation(x, y);
+		this.patrol = points;
+
+		this.currentPoint = 0;
+		this.targetX = this.patrol.get(currentPoint).x;
+		this.targetY = this.patrol.get(currentPoint).y;
 
 	}
 
@@ -97,8 +108,20 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void draw(Graphics g) {
 
-		// g.setColor(Color.WHITE);
-		// g.fillRect(this.coord.x, this.coord.y, 20, 20);
+		g.setColor(Color.GRAY);
+		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+				- this.contactRadius, this.contactRadius * 2,
+				this.contactRadius * 2, 0, 360);
+		// display patrol points
+//		for (int i = 0; i < patrol.size(); i++) {
+//			if (i == this.currentPoint)
+//				g.setColor(Color.RED);
+//			else
+//				g.setColor(Color.GREEN);
+//			g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
+//			g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
+//					patrol.get(i).y);
+//		}
 		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
 	}
 
@@ -116,14 +139,24 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 		// no move was possible after last step, direction is blocked, make new
 		// target
 		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
+//			this.targetX = (int) (Math.random() * 800);
+//			this.targetY = (int) (Math.random() * 600);
+			this.currentPoint = (int) (Math.random()*this.patrol.size());
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
+
 		}
 
 		// target point reached, make new random target point
 		if (this.targetX == this.coord.x && this.targetY == this.coord.y) {
-			this.targetX = (int) (Math.random() * 800);
-			this.targetY = (int) (Math.random() * 600);
+//			this.targetX = (int) (Math.random() * 800);
+//			this.targetY = (int) (Math.random() * 600);
+			if (this.currentPoint < patrol.size() - 1)
+				this.currentPoint++;
+			else
+				this.currentPoint = 0;
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
 		}
 
 		int step = (this.speed == Speed.fast ? 4 : 2);
@@ -181,8 +214,8 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void touch(LocalObject object) {
 		if (object.getTypeName().equals("HomoSapiens")) {
-		EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
-				object));
+			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+					object));
 		}
 
 	}
@@ -201,26 +234,27 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
 	@Override
 	public int getContactRadius() {
-		 
+
 		return this.contactRadius;
 	}
 
 	@Override
 	public void setContactRadius(int radius) {
 		this.contactRadius = radius;
-		
+
 	}
 
 	@Override
 	public void atZone(Collection<Visible> objects) {
 		if (objects.isEmpty()) {
-			this.speed = Speed.slow;  // restore slow speed after all objects gone from visibility
+			this.speed = Speed.slow; // restore slow speed after all objects
+										// gone from visibility
 			return;
 		}
 		for (Visible t : objects) {
-			// order of the checks is: Pterodactel, Wolf, HomoSapiens, (decreasing
-			// danger)
-			
+			// order of the checks is: Pterodactel, Wolf, HomoSapiens,
+			// (decreasing danger)
+
 			if (t.getTypeName().equals("Pterodactel")) {
 				this.speed = Speed.fast;
 
@@ -228,7 +262,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 				this.targetX = (int) runAway.getX();
 				this.targetY = (int) runAway.getY();
 
-				System.err.println("Pterodactel is Approaching Wolf!");
+				// System.err.println("Pterodactel is Approaching Wolf!");
 				break;
 			}
 			if (t.getTypeName().equals("Wolf")) {
@@ -236,7 +270,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 				Point runAway = getRunAwayCoord(t.getCoordinate());
 				this.targetX = (int) runAway.getX();
 				this.targetY = (int) runAway.getY();
-				System.err.println("Pterodactel is Approaching Wolf!");
+				// System.err.println("Pterodactel is Approaching Wolf!");
 				break;
 			}
 			if (t.getTypeName().equals("HomoSapiens")) {
@@ -244,14 +278,14 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 				// targeting HomoSapiens object
 				this.targetX = (int) t.getCoordinate().getX();
 				this.targetY = (int) t.getCoordinate().getY();
-				System.err.println("Wolf is Targeting HomoSapiens!");
+				// System.err.println("Wolf is Targeting HomoSapiens!");
 				break;
 			}
 
 		}
-		
+
 	}
-	
+
 	// calculate the run away point when a monster is approaching at coordinate
 	private Point getRunAwayCoord(Point coordinate) {
 		Point p = new Point();
@@ -259,6 +293,5 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 		p.y = (this.coord.y - coordinate.y) + this.coord.y;
 		return p;
 	}
-
 
 }
