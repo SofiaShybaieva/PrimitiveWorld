@@ -114,7 +114,7 @@ public class Engine implements Enginable {
 
 			if (event.getType() == EventType.Global) {
 				GlobalEvent globalEvent = (GlobalEvent) event;
-				globalEventsMessages += globalEvent.getMessage();
+				globalEventsMessages += globalEvent.getMessage() + "\n";
 			}
 			if (event.getType() == EventType.Comand) {
 				CommandEvent commandEvent = (CommandEvent) event;
@@ -128,9 +128,9 @@ public class Engine implements Enginable {
 		// System.out.println("Global Events Messages: " +
 		// globalEventsMessages);
 
-		if (globalEventsMessages.isEmpty() != true) {
-			drawMessage(globalEventsMessages);
-		}
+//		if (globalEventsMessages.isEmpty() != true) {
+//			drawMessage(globalEventsMessages);
+//		}
 
 	}
 

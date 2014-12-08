@@ -7,6 +7,7 @@ package primitiveWorld.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -35,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -51,7 +54,7 @@ import primitiveWorld.interfaces.Visible;
  */
 public class BubbleWorldGUI extends JFrame implements KeyListener {
 
-	protected static final String aboutString = "Lab12";
+	protected static final String aboutString = "Made by Totally Spiese Team";
 	Enginable PrimitiveWorld = null;
 	JPanel PrimitivePanel = new JPanel();
 	Timer timer = null;
@@ -60,6 +63,10 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 	private LinkedList<String> recentFileNames = null;
 	private BubbleWorldGUI that = this;
 	private JMenu subMenu = null;
+	private boolean isPaused = true;
+	JTextArea resultTextArea;
+	JPanel panel = new JPanel();
+	private String welcome = "Primitive World 1.2\n\n";
 
 	BubbleWorldGUI() {
 
@@ -72,18 +79,17 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		}
 
 		this.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		this.setLayout(null);
-		this.setSize(1000, 620);
+		this.setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+		this.setSize(800, 620);
 		this.setTitle("BubbleWorld");
 		this.setJMenuBar(this.createMenuBar());
 		this.setVisible(true);
-		PrimitivePanel.setLocation(10, 10);
-		PrimitivePanel.setSize(800, 600);
-		this.add(PrimitivePanel);
+		PrimitivePanel.setLocation(0, 0);
+		PrimitivePanel.setSize(600, 600);
+		PrimitivePanel.setPreferredSize(new Dimension(600, 600));
 		PrimitivePanel.setBackground(Color.WHITE);
 		PrimitivePanel.setVisible(true);
-		PrimitiveWorld = new Engine();
-		PrimitiveWorld.setPanel(PrimitivePanel);
+
 		PrimitivePanel.addMouseListener(new java.awt.event.MouseAdapter() {
 			@Override
 			public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -98,14 +104,37 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 								.getY()));
 					}
 				});
-		// PrimitivePanel.add
+
+		// PrimitivePanel.setMinimumSize(new Dimension(600, 600));
+		this.add(PrimitivePanel);
+
+		PrimitiveWorld = new Engine();
+		PrimitiveWorld.setPanel(PrimitivePanel);
+
 		this.addKeyListener(this);
-		timer = new Timer(100, new ActionListener() {
+		BubbleWorldGUI that = this;
+		timer = new Timer(500, new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// System.out.println(PrimitiveWorld.nextStep());
-				PrimitiveWorld.nextStep();
+
+				String result = PrimitiveWorld.nextStep();
+				if (!result.isEmpty()) {
+					that.resultTextArea.append(result + "\n");
+					displayMessage(result);
+				}
 				PrimitiveWorld.redraw();
+				that.panel.invalidate();
+				if (result.contains("Victory") || result.contains("Defeat")) {
+					that.timer.stop();
+					that.resultTextArea.append("Game Over!\n");
+				}
+
+			}
+
+			private void displayMessage(String result) {
+				JOptionPane.showMessageDialog(that, result);
 			}
 		});
 
@@ -113,25 +142,46 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				askAndExit();
 
-				if (JOptionPane.showConfirmDialog(null,
-						"Are you sure to close this window?",
-						"Really Closing?", JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-					try {
-						that.saveRecentFileList();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.exit(0);
-				}
 			}
 		});
 
-		// auto-load default location and draw
-		// PrimitiveWorld.loadLocation(new File(fileNameInput.getText()));
-		// PrimitiveWorld.redraw();
+		this.resultTextArea = new JTextArea(this.welcome, 125, 17);
+		this.resultTextArea.setCaretPosition(this.resultTextArea.getDocument()
+				.getLength());
+		this.resultTextArea.setEditable(false);
+
+		this.resultTextArea.setLineWrap(true);
+		this.resultTextArea.setMinimumSize(new Dimension(200, 600));
+		this.resultTextArea.setVisible(true);
+		// this.setLocation(600,10);
+		// this.setSize(200,600);
+		// this.setPreferredSize(new Dimension (200,600));
+		// this.add(this.resultTextArea);
+
+		panel.setLocation(600, 0);
+		panel.setSize(200, 600);
+		panel.setPreferredSize(new Dimension(200, 600));
+		panel.add(resultTextArea);
+		panel.setVisible(true);
+		this.add(panel);
+
+	}
+
+	protected void askAndExit() {
+
+		if (JOptionPane.showConfirmDialog(null,
+				"Are you sure to close this window?", "Really Closing?",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+			try {
+				that.saveRecentFileList();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.exit(0);
+		}
 	}
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -209,6 +259,12 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		}
 
 		menuItem = new JMenuItem("Exit", KeyEvent.VK_E);
+		menuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				askAndExit();
+			}
+		});
 		menu.add(menuItem);
 
 		// Build second menu in the menu bar.
@@ -226,14 +282,14 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 			this.recentFileNames = new LinkedList<String>();
 		this.recentFileNames.clear();
 
-		System.err.println("Loading recent files");
+		// System.err.println("Loading recent files");
 		File recentFile = new File("PrimitiveWorld.recent");
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(recentFile));
 			String line = null;
 			while ((line = br.readLine()) != null) {
-				System.err.println(line);
+				// System.err.println(line);
 				this.recentFileNames.add(line);
 			}
 			br.close();
@@ -252,7 +308,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 
 		if (this.recentFileNames == null)
 			return;
-		System.err.println("Saving recent files");
+		// System.err.println("Saving recent files");
 
 		File recentFile = new File("PrimitiveWorld.recent");
 		BufferedWriter br = null;
@@ -263,7 +319,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 				final String each = (String) this.recentFileNames.get(i);
 				br.write(each);
 				br.newLine();
-				System.err.println(each);
+				// System.err.println(each);
 				if (this.recentFileNames.size() - i > 5)
 					break;
 			}
@@ -289,11 +345,12 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		fileChooser.setFileFilter(new FileNameExtensionFilter(
 				"Primitive World 1.2 Location File", "location"));
 		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			File file = fileChooser.getSelectedFile(); 
+			File file = fileChooser.getSelectedFile();
 			this.recentFileNames.add(file.getAbsolutePath());
 			this.menuBar.updateUI();
 			PrimitiveWorld.loadLocation(file);
 			PrimitiveWorld.redraw();
+			this.resultTextArea.setText(this.welcome);
 			if (!timer.isRunning())
 				timer.start();
 		}
@@ -305,6 +362,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		this.menuBar.updateUI();
 		PrimitiveWorld.loadLocation(file);
 		PrimitiveWorld.redraw();
+		this.resultTextArea.setText(this.welcome);
 		if (!timer.isRunning())
 			timer.start();
 	}
@@ -329,21 +387,6 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 
 		dialog.setVisible(true);
 
-	}
-
-	private static void createAndShowGUI() {
-
-		// Create and set up the window.
-		JFrame frame = new JFrame("HelloWorldSwing");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		// Add the ubiquitous "Hello World" label.
-		JLabel label = new JLabel("Hello World");
-		frame.getContentPane().add(label);
-
-		// Display the window.
-		frame.pack();
-		frame.setVisible(true);
 	}
 
 	/**
