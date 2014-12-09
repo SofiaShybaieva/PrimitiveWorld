@@ -13,10 +13,10 @@ import primitiveWorld.engine.event.Command;
 import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Landscape;
 import primitiveWorld.interfaces.Movable;
-
+// wormhole
 public class Marshland implements Landscape {
 	Image image;
-	File file = new File("marshland.png");
+	File file = new File("galaxy1.jpg");
 
 	// BufferedImage bufferedImage;
 

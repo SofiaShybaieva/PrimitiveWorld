@@ -173,7 +173,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 	}
 
 	protected void askAndExit() {
-
+		System.exit(0);
 		if (JOptionPane.showConfirmDialog(null,
 				"Are you sure to close this window?", "Really Closing?",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
@@ -200,37 +200,37 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		menu.getAccessibleContext().setAccessibleDescription(
 				"Primitive World main menu");
 
-		menu.addMenuListener(new MenuListener() {
-			private boolean wasRunning = false;
-
-			@Override
-			public void menuSelected(MenuEvent e) {
-				wasRunning = false;
-				if (that.timer.isRunning()) {
-					wasRunning = true;
-					that.timer.stop();
-
-				}
-			}
-
-			@Override
-			public void menuDeselected(MenuEvent e) {
-				if (wasRunning) {
-					that.timer.start();
-
-				}
-				
-			}
-
-			@Override
-			public void menuCanceled(MenuEvent e) {
-				if (wasRunning) {
-					that.timer.start();
-
-				}  
-				
-			}
-		});
+//		menu.addMenuListener(new MenuListener() {
+//			private boolean wasRunning = false;
+//
+//			@Override
+//			public void menuSelected(MenuEvent e) {
+//				wasRunning = false;
+//				if (that.timer.isRunning()) {
+//					wasRunning = true;
+//					that.timer.stop();
+//
+//				}
+//			}
+//
+//			@Override
+//			public void menuDeselected(MenuEvent e) {
+//				if (wasRunning) {
+//					that.timer.start();
+//
+//				}
+//				
+//			}
+//
+//			@Override
+//			public void menuCanceled(MenuEvent e) {
+//				if (wasRunning) {
+//					that.timer.start();
+//
+//				}  
+//				
+//			}
+//		});
 
 		menuBar.add(menu);
 

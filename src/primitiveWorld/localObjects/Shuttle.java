@@ -20,12 +20,12 @@ import primitiveWorld.interfaces.Movable;
 import primitiveWorld.interfaces.Tight;
 import primitiveWorld.interfaces.Visible;
 
-public class HomoSapiens implements Movable, Drawable, EventListener, Visible,
+public class Shuttle implements Movable, Drawable, EventListener, Visible,
 		Tight {
 	private Dimension size = new Dimension(20, 20);
 	private Point coord;
 	private Image image;
-	private File file = new File("boy.png");
+	private File file = new File("shuttle2.png");
 	private String passRights = "";
 	private int nextX;
 	private int nextY;
@@ -47,11 +47,11 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible,
 
 	}
 
-	public HomoSapiens() {
+	public Shuttle() {
 		init();
 	}
 
-	public HomoSapiens(int x, int y) {
+	public Shuttle(int x, int y) {
 		init();
 		this.coord.setLocation(x, y);
 	}
@@ -59,7 +59,7 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible,
 	@Override
 	public String getTypeName() {
 
-		return "HomoSapiens";
+		return "Shuttle";
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class HomoSapiens implements Movable, Drawable, EventListener, Visible,
 		try {
 			image = ImageIO.read(file);
 		} catch (IOException e) {
-			System.err.println("Image Boy not found!");
+			System.err.println("Image Shuttle not found!");
 		}
 	}
 

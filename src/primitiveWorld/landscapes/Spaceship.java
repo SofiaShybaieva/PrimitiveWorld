@@ -11,13 +11,13 @@ import javax.imageio.ImageIO;
 
 import primitiveWorld.interfaces.Landscape;
 import primitiveWorld.interfaces.Movable;
-
-public class Rock implements Landscape {
+// spaceship
+public class Spaceship implements Landscape {
 	Image image;
-	File file = new File("rock.png");
-	//BufferedImage bufferedImage;
+	File file = new File("spaceship1.png");
+	BufferedImage bufferedImage;
 
-	public Rock() {
+	public Spaceship() {
 		try {
 			image = ImageIO.read(file);
 			//bufferedImage = new BufferedImage(20, 20,
@@ -25,13 +25,13 @@ public class Rock implements Landscape {
 			//Graphics g = bufferedImage.getGraphics();
 			//g.drawImage(image, 0, 0, 20, 20, null);
 		} catch (IOException e) {
-			System.err.println("Image Rock not found!");
+			System.err.println("Image Spaceship not found!");
 		}
 	}
 
 	@Override
 	public void draw(Graphics g, Point coord) {
-		g.drawImage(image, coord.x, coord.y, 20, 20, null);
+		g.drawImage(image, coord.x-30, coord.y-30, 60, 60, null);
 
 	}
 

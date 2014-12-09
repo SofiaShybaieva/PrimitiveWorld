@@ -9,10 +9,10 @@ import java.util.Scanner;
 
 import primitiveWorld.engine.EventCollector;
 import primitiveWorld.interfaces.LocalObject;
-import primitiveWorld.landscapes.Cave;
 import primitiveWorld.landscapes.Forest;
 import primitiveWorld.landscapes.Marshland;
-import primitiveWorld.landscapes.Rock;
+import primitiveWorld.landscapes.Space;
+import primitiveWorld.landscapes.Spaceship;
 import primitiveWorld.landscapes.Water;
 import primitiveWorld.localObjects.LocalObjectsFactory;
 
@@ -46,24 +46,19 @@ public class LocationLoader {
 				byte[] bytes = row.getBytes();
 				for (int j = 0; j < sizeX; j++) {
 					switch (bytes[j]) {
-					case 'R':
-						location.area[i][j] = new Rock();
+					case 'S': // spaceship
+						location.area[i][j] = new Spaceship();
 						break;
-					case 'W':
-						location.area[i][j] = new Water();
+					case 's': // space
+						location.area[i][j] = new Space();
 						break;
-					case 'e':
-						location.area[i][j] = null;
-						break;
-					case 'M':
+					case 'W': // wormhole
 						location.area[i][j] = new Marshland();
 						break;
-					case 'F':
+					case 'P': // planet
 						location.area[i][j] = new Forest();
 						break;
-					case 'C':
-						location.area[i][j] = new Cave();
-						break;
+					
 					} // switch
 				} // for j
 

@@ -22,58 +22,63 @@ import primitiveWorld.interfaces.Tight;
 import primitiveWorld.interfaces.Visible;
 import primitiveWorld.interfaces.Watcher;
 
-public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
+public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
+
+	private Dimension size = new Dimension(20, 20);
+	private Point coord;
+	private Image image;
+	private File file = new File("spaceship3.png");
+	private String passRights = "";
+	private int nextX;
+	private int nextY;
+	// Point pathPoints[] = null;
+	private ArrayList<Point> patrol = null;
+	private int currentPoint = 0;
+	private int targetX, targetY;
+	private int oldX, oldY;
+	private int visibility = 100;
+	private int contactRadius = 60;
 
 	private static enum Speed {
 		slow, fast
 	}
 
-	private Dimension size = new Dimension(20, 20);
-	private Point coord;
-	private Image image;
-	private File file = new File("wolf.png");
-	private String passRights = "";
-	private int nextX;
-	private int nextY;
-
-	private int targetX, targetY;
-	private int oldX, oldY;
-
-	private int visibility = 100;
-	private int contactRadius = 50;
-	private Speed speed;
-	private ArrayList<Point> patrol = null;
-	private int currentPoint=0;
+	private Speed speed = Speed.slow;
 
 	private void init() {
-		this.setPassRights("");
+		this.setPassRights("f");
 		this.coord = new Point();
 		this.coord.setLocation(0, 0);
-		this.targetX = this.targetY = this.nextX = this.nextY = this.oldX = this.oldY = 0;
-		// size.setSize(20, 20);
+		this.targetX = this.targetY = this.nextX = this.nextY = 0;// = this.oldX
+																	// =
+																	// this.oldY
+																	// = 0;
 		loadImage(file);
 
 	}
 
-	public Wolf() {
+	public Pirateship() {
 		init();
 	}
 
-	public Wolf(int x, int y, ArrayList<Point> points) {
+	public Pirateship(int x, int y, ArrayList<Point> points) {
 		init();
 		this.coord.setLocation(x, y);
 		this.patrol = points;
+		this.targetX = this.nextX = this.coord.x;
+		this.targetY = this.nextY = this.coord.y;
+	}
 
-		this.currentPoint = 0;
-		this.targetX = this.patrol.get(currentPoint).x;
-		this.targetY = this.patrol.get(currentPoint).y;
+	public Pirateship(int x, int y) {
+		init();
+		this.coord.setLocation(x, y);
 
 	}
 
 	@Override
 	public String getTypeName() {
 
-		return "Wolf";
+		return "Pirateship";
 	}
 
 	@Override
@@ -92,15 +97,15 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	public boolean is(String ability) {
 		if (ability.equals("Drawable"))
 			return true;
-		if (ability.equals("Tight"))
-			return true;
 		if (ability.equals("Active"))
 			return true;
 		if (ability.equals("Movable"))
 			return true;
-		if (ability.equals("Watcher"))
-			return true;
 		if (ability.equals("Visible"))
+			return true;
+		if (ability.equals("Tight"))
+			return true;
+		if (ability.equals("Watcher"))
 			return true;
 		return false;
 	}
@@ -108,7 +113,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void draw(Graphics g) {
 
-		g.setColor(Color.GRAY);
+		g.setColor(Color.YELLOW);
 		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
 				- this.contactRadius, this.contactRadius * 2,
 				this.contactRadius * 2, 0, 360);
@@ -122,6 +127,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 //			g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
 //					patrol.get(i).y);
 //		}
+
 		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
 	}
 
@@ -129,7 +135,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 		try {
 			image = ImageIO.read(file);
 		} catch (IOException e) {
-			System.err.println("Image Wolf not found!");
+			System.err.println("Image Pirateship not found!");
 		}
 	}
 
@@ -138,9 +144,7 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
-		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
-//			this.targetX = (int) (Math.random() * 800);
-//			this.targetY = (int) (Math.random() * 600);
+		if (this.oldX == this.coord.x && this.oldY == this.coord.y) { 
 			this.currentPoint = (int) (Math.random()*this.patrol.size());
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
@@ -149,19 +153,17 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 
 		// target point reached, make new random target point
 		if (this.targetX == this.coord.x && this.targetY == this.coord.y) {
-//			this.targetX = (int) (Math.random() * 800);
-//			this.targetY = (int) (Math.random() * 600);
 			if (this.currentPoint < patrol.size() - 1)
 				this.currentPoint++;
 			else
 				this.currentPoint = 0;
+
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
 		}
-
-		int step = (this.speed == Speed.fast ? 4 : 2);
-		int stepX = (int) (1 + Math.random() * step);
-		int stepY = (int) (1 + Math.random() * step);
+		int step = (this.speed == Speed.fast ? 8 : 4);
+		// int stepX = (int) (1 + Math.random() * step);
+		// int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 
@@ -170,11 +172,11 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 										// +1)
 		int dy = this.targetY - y0;
 		int signY = Integer.signum(dy);
-		this.nextX = x0 + stepX * signX;
-		this.nextY = y0 + stepY * signY;
+		this.nextX = x0 + step * signX;
+		this.nextY = y0 + step * signY;
 		this.oldX = this.coord.x;
 		this.oldY = this.coord.y;
-
+		// System.err.println("targetX,targetY "+targetX+" "+targetY);
 	}
 
 	@Override
@@ -200,36 +202,15 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	}
 
 	@Override
-	public Dimension getSize() {
-
-		return this.size;
-	}
-
-	@Override
-	public void setSize(Dimension size) {
-		this.size.setSize(size);
-
-	}
-
-	@Override
-	public void touch(LocalObject object) {
-		if (object.getTypeName().equals("HomoSapiens")) {
-			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
-					object));
-		}
-
-	}
-
-	@Override
 	public int getVisibleRating() {
-		// TODO Auto-generated method stub
-		return 100;
+
+		return this.visibility;
 	}
 
 	@Override
 	public void setVisibleRating(int visibleRating) {
-		// TODO Auto-generated method stub
 
+		this.visibility = visibleRating;
 	}
 
 	@Override
@@ -247,51 +228,57 @@ public class Wolf implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void atZone(Collection<Visible> objects) {
 		if (objects.isEmpty()) {
-			this.speed = Speed.slow; // restore slow speed after all objects
-										// gone from visibility
+			this.speed = Speed.slow;
+			this.targetX = this.patrol.get(currentPoint).x;
+			this.targetY = this.patrol.get(currentPoint).y;
 			return;
 		}
+
 		for (Visible t : objects) {
-			// order of the checks is: Pterodactel, Wolf, HomoSapiens,
-			// (decreasing danger)
-
-			if (t.getTypeName().equals("Pterodactel")) {
+			// order of the checks is: HomoSapiens, Wolf (decreasing
+			// value of catching the object)
+			if (t.getTypeName().equals("HomoSapiens")) {
 				this.speed = Speed.fast;
-
-				Point runAway = getRunAwayCoord(t.getCoordinate());
-				this.targetX = (int) runAway.getX();
-				this.targetY = (int) runAway.getY();
-
-				// System.err.println("Pterodactel is Approaching Wolf!");
+				this.targetX = (int) t.getCoordinate().getX();
+				this.targetY = (int) t.getCoordinate().getY();
+				// System.err.println("Pterodactel is Targeting HomoSapiens!");
 				break;
 			}
 			if (t.getTypeName().equals("Wolf")) {
 				this.speed = Speed.fast;
-				Point runAway = getRunAwayCoord(t.getCoordinate());
-				this.targetX = (int) runAway.getX();
-				this.targetY = (int) runAway.getY();
-				// System.err.println("Pterodactel is Approaching Wolf!");
-				break;
-			}
-			if (t.getTypeName().equals("HomoSapiens")) {
-				this.speed = Speed.fast;
-				// targeting HomoSapiens object
 				this.targetX = (int) t.getCoordinate().getX();
 				this.targetY = (int) t.getCoordinate().getY();
-				// System.err.println("Wolf is Targeting HomoSapiens!");
+
+				// System.err.println("Pterodactel is Targeting Wolf!");
 				break;
 			}
 
 		}
-
 	}
 
-	// calculate the run away point when a monster is approaching at coordinate
-	private Point getRunAwayCoord(Point coordinate) {
-		Point p = new Point();
-		p.x = (this.coord.x - coordinate.x) + this.coord.x;
-		p.y = (this.coord.y - coordinate.y) + this.coord.y;
-		return p;
+	@Override
+	public Dimension getSize() {
+
+		return this.size;
+	}
+
+	@Override
+	public void setSize(Dimension size) {
+		this.size.setSize(size);
+	}
+
+	@Override
+	public void touch(LocalObject object) {
+
+		// eat (remove) 4 types of objects when in touch
+		if (object.getTypeName().equals("Wolf")
+				|| object.getTypeName().equals("HomoSapiens")
+				|| object.getTypeName().equals("Snake")
+				|| object.getTypeName().equals("Krokodile")) {
+			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
+					object));
+			this.speed = Speed.slow;
+		}
 	}
 
 }

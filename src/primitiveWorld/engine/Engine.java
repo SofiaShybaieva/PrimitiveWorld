@@ -87,16 +87,18 @@ public class Engine implements Enginable {
 
 		graphics = bufferedImage.getGraphics();
 		// location.draw(this.graphics);
-		graphics.setColor(Color.WHITE);
+		// graphics.setColor(Color.WHITE);
 
-		graphics.fillRect(0, 0, panel.getWidth(), panel.getHeight());
+		// graphics.fillRect(0, 0, panel.getWidth(), panel.getHeight());
 		location.draw(this.graphics);
 
-		for (LocalObject t : this.localObjects) {
-			if (t.is("Drawable"))
-				((Drawable) t).draw(this.graphics);
+		// draw local objects
+		if (this.localObjects != null)
+			for (LocalObject t : this.localObjects) {
+				if (t.is("Drawable"))
+					((Drawable) t).draw(this.graphics);
+			}
 
-		}
 		this.drawMessage(this.globalEventsMessages);
 		graphics = panel.getGraphics();
 		graphics.drawImage(bufferedImage, 0, 0, null);
@@ -128,14 +130,16 @@ public class Engine implements Enginable {
 		// System.out.println("Global Events Messages: " +
 		// globalEventsMessages);
 
-//		if (globalEventsMessages.isEmpty() != true) {
-//			drawMessage(globalEventsMessages);
-//		}
+		// if (globalEventsMessages.isEmpty() != true) {
+		// drawMessage(globalEventsMessages);
+		// }
 
 	}
 
 	// nextStep, touch and moveTo for all local objects
 	private void moveLocalObjects() {
+		if (this.localObjects == null)
+			return;
 		for (LocalObject t : this.localObjects) {
 			if (t.is("Active") != true)
 				continue;
@@ -151,7 +155,7 @@ public class Engine implements Enginable {
 			{
 				((Tight) touched).touch(t);
 				((Tight) t).touch(touched);
-			} // else // ДОБАВЛЕНО ТОЛЬКО ELSE!!!
+			}
 
 			if (target != t.getCoordinate()) {
 				if (location.isCanMove((Movable) t)) {
@@ -172,7 +176,8 @@ public class Engine implements Enginable {
 				if (t == t0 || t.is("Visible") == false)
 					continue; // skip the self-watch and non-visible objects
 				Point p = t.getCoordinate();
-				if (p.distance(p0) <= radius && ((Visible)t).getVisibleRating()>0)
+				if (p.distance(p0) <= radius
+						&& ((Visible) t).getVisibleRating() > 0)
 					atZone.add((Visible) t);
 			}
 			((Watcher) t0).atZone(atZone);

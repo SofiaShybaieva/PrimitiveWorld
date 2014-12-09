@@ -11,16 +11,15 @@ import javax.imageio.ImageIO;
 import primitiveWorld.engine.EventCollector;
 import primitiveWorld.engine.event.GlobalEvent;
 import primitiveWorld.interfaces.Landscape;
-import primitiveWorld.interfaces.Movable;
-import primitiveWorld.localObjects.HomoSapiens;
+import primitiveWorld.interfaces.Movable; 
 
-public class Cave implements Landscape {
+public class Space implements Landscape {
 	Image image;
-	File file = new File("cave.png");
+	File file = new File("space.jpg");
 
 	// BufferedImage bufferedImage;
 
-	public Cave() {
+	public Space() {
 
 		try {
 			image = ImageIO.read(file);
@@ -29,39 +28,25 @@ public class Cave implements Landscape {
 			// Graphics g = bufferedImage.getGraphics();
 			// g.drawImage(image, 0, 0, 20, 20, null);
 		} catch (IOException e) {
-			System.err.println("Image Cave not found!");
+			System.err.println("Image Space not found!");
 		}
 	}
 
 	@Override
 	public void draw(Graphics g, Point coord) {
-		g.drawImage(image, coord.x, coord.y, 20, 20, null);
+		g.drawImage(image, 0, 0, 600, 600, null);
 
 	}
 
 	@Override
 	public boolean isCanEnterOn(Movable traveler) {
-		String rights = traveler.getPassRights();
-		if (rights.contains("f"))
-			return true;
-
-		if (traveler instanceof HomoSapiens) {
-
-			return true;
-		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isCanStayOn(Movable traveler) {
-		String rights = traveler.getPassRights();
-		if (rights.contains("f"))
-			return true;
-		if (traveler instanceof HomoSapiens) {
-			EventCollector.addEvent(new GlobalEvent("Victory"));
-			return true;
-		}
-		return false;
+		
+		return true;
 	}
 
 }

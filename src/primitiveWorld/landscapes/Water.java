@@ -13,7 +13,7 @@ import primitiveWorld.engine.event.Command;
 import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Landscape;
 import primitiveWorld.interfaces.Movable;
-
+// antiwormhole - doubles the obj
 public class Water implements Landscape {
 	Image image;
 	File file = new File("water.png");
