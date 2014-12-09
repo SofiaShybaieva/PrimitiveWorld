@@ -42,6 +42,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import primitiveWorld.engine.Engine;
@@ -54,7 +56,7 @@ import primitiveWorld.interfaces.Visible;
  */
 public class BubbleWorldGUI extends JFrame implements KeyListener {
 
-	protected static final String aboutString = "Made by Totally Spiese Team";
+	protected static final String aboutString = "Made by Totally Spies Team";
 	Enginable PrimitiveWorld = null;
 	JPanel PrimitivePanel = new JPanel();
 	Timer timer = null;
@@ -84,6 +86,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		this.setTitle("BubbleWorld");
 		this.setJMenuBar(this.createMenuBar());
 		this.setVisible(true);
+		this.setFocusable(true);
 		PrimitivePanel.setLocation(0, 0);
 		PrimitivePanel.setSize(600, 600);
 		PrimitivePanel.setPreferredSize(new Dimension(600, 600));
@@ -184,30 +187,51 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		}
 	}
 
-	/** Returns an ImageIcon, or null if the path was invalid. */
-	protected static ImageIcon createImageIcon(String path) {
-		java.net.URL imgURL = BubbleWorldGUI.class.getResource(path);
-		if (imgURL != null) {
-			return new ImageIcon(path);
-		} else {
-			System.err.println("Couldn't find file: " + path);
-			return null;
-		}
-	}
-
 	public JMenuBar createMenuBar() {
 
 		JMenu menu, submenu;
 		JMenuItem menuItem;
 
-		// Create the menu bar.
-		// menuBar = new JMenuBar();
 		BubbleWorldGUI that = this;
+
 		// Build the first menu.
 		menu = new JMenu("Primitive World");
 		menu.setMnemonic(KeyEvent.VK_P);
 		menu.getAccessibleContext().setAccessibleDescription(
 				"Primitive World main menu");
+
+		menu.addMenuListener(new MenuListener() {
+			private boolean wasRunning = false;
+
+			@Override
+			public void menuSelected(MenuEvent e) {
+				wasRunning = false;
+				if (that.timer.isRunning()) {
+					wasRunning = true;
+					that.timer.stop();
+
+				}
+			}
+
+			@Override
+			public void menuDeselected(MenuEvent e) {
+				if (wasRunning) {
+					that.timer.start();
+
+				}
+				
+			}
+
+			@Override
+			public void menuCanceled(MenuEvent e) {
+				if (wasRunning) {
+					that.timer.start();
+
+				}  
+				
+			}
+		});
+
 		menuBar.add(menu);
 
 		// a group of JMenuItems
@@ -394,31 +418,6 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
-		/* Set the Nimbus look and feel */
-		/*
-		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
-		 * default look and feel. For details see
-		 * http://download.oracle.com/javase
-		 * /tutorial/uiswing/lookandfeel/plaf.html
-		 */
-		try {
-			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager
-					.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					javax.swing.UIManager.setLookAndFeel(info.getClassName());
-					break;
-					// System.err.println(info.getName());
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-
-		} catch (InstantiationException ex) {
-
-		} catch (IllegalAccessException ex) {
-
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-
-		}
 
 		BubbleWorldGUI GUI = new BubbleWorldGUI();
 		// GUI.setVisible(true);
