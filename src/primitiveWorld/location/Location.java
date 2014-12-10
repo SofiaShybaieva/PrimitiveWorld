@@ -18,8 +18,7 @@ import primitiveWorld.interfaces.EventListener;
 import primitiveWorld.interfaces.Landscape;
 import primitiveWorld.interfaces.LocalObject;
 import primitiveWorld.interfaces.Movable;
-import primitiveWorld.landscapes.Forest;
-import primitiveWorld.landscapes.Marshland;
+import primitiveWorld.landscapes.Forest; 
 import primitiveWorld.landscapes.Water;
 
 public class Location implements EventListener {
@@ -93,7 +92,7 @@ public class Location implements EventListener {
 		if (event.getName().equals("comand.removeLocalObject")) {
 			CommandEvent commandEvent = (CommandEvent) event;
 			LocalObject obj = (LocalObject) commandEvent.getArgument();
-			if (obj.getTypeName().equals("HomoSapiens")) {
+			if (obj.getTypeName().equals("Shuttle")) {
 				GlobalEvent globalEvent = new GlobalEvent("Defeat");
 				EventCollector.addEvent(globalEvent);
 			}

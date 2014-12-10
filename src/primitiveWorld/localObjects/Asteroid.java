@@ -43,7 +43,7 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 	private int contactRadius = 50;
 	private Speed speed;
 	private ArrayList<Point> patrol = null;
-	private int currentPoint=0;
+	private int currentPoint = 0;
 
 	private void init() {
 		this.setPassRights("");
@@ -63,6 +63,22 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 		init();
 		this.coord.setLocation(x, y);
 		this.patrol = points;
+
+		this.currentPoint = 0;
+		this.targetX = this.patrol.get(currentPoint).x;
+		this.targetY = this.patrol.get(currentPoint).y;
+
+	}
+
+	public Asteroid(int x, int y) {
+		init();
+		this.coord.setLocation(x, y);
+		this.patrol = new ArrayList<Point>();
+		for (int i = 0; i < 50; i++) {
+			int rx = (int) (Math.random() * 600);
+			int ry = (int) (Math.random() * 600);
+			this.patrol.add(new Point(rx, ry));
+		}
 
 		this.currentPoint = 0;
 		this.targetX = this.patrol.get(currentPoint).x;
@@ -108,20 +124,22 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void draw(Graphics g) {
 
-		g.setColor(Color.GRAY);
-		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
-				- this.contactRadius, this.contactRadius * 2,
-				this.contactRadius * 2, 0, 360);
+//		g.setColor(Color.GRAY);
+//		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+//				- this.contactRadius, this.contactRadius * 2,
+//				this.contactRadius * 2, 0, 360);
+		
+		
 		// display patrol points
-//		for (int i = 0; i < patrol.size(); i++) {
-//			if (i == this.currentPoint)
-//				g.setColor(Color.RED);
-//			else
-//				g.setColor(Color.GREEN);
-//			g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
-//			g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
-//					patrol.get(i).y);
-//		}
+		// for (int i = 0; i < patrol.size(); i++) {
+		// if (i == this.currentPoint)
+		// g.setColor(Color.RED);
+		// else
+		// g.setColor(Color.GREEN);
+		// g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
+		// g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
+		// patrol.get(i).y);
+		// }
 		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
 	}
 
@@ -139,9 +157,9 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 		// no move was possible after last step, direction is blocked, make new
 		// target
 		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
-//			this.targetX = (int) (Math.random() * 800);
-//			this.targetY = (int) (Math.random() * 600);
-			this.currentPoint = (int) (Math.random()*this.patrol.size());
+			// this.targetX = (int) (Math.random() * 800);
+			// this.targetY = (int) (Math.random() * 600);
+			this.currentPoint = (int) (Math.random() * this.patrol.size());
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
 
@@ -149,8 +167,8 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 
 		// target point reached, make new random target point
 		if (this.targetX == this.coord.x && this.targetY == this.coord.y) {
-//			this.targetX = (int) (Math.random() * 800);
-//			this.targetY = (int) (Math.random() * 600);
+			// this.targetX = (int) (Math.random() * 800);
+			// this.targetY = (int) (Math.random() * 600);
 			if (this.currentPoint < patrol.size() - 1)
 				this.currentPoint++;
 			else
@@ -159,7 +177,7 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 			this.targetY = this.patrol.get(currentPoint).y;
 		}
 
-		int step = (this.speed == Speed.fast ? 4 : 2);
+		int step = (this.speed == Speed.fast ? 9 : 3);
 		int stepX = (int) (1 + Math.random() * step);
 		int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
@@ -213,7 +231,8 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 
 	@Override
 	public void touch(LocalObject object) {
-		if (object.getTypeName().equals("HomoSapiens")) {
+		if (object.getTypeName().equals("Shuttle")
+				|| object.getTypeName().equals("Pirateship")) {
 			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 					object));
 		}
@@ -255,7 +274,7 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 			// order of the checks is: Pterodactel, Wolf, HomoSapiens,
 			// (decreasing danger)
 
-			if (t.getTypeName().equals("Pterodactel")) {
+			if (t.getTypeName().equals("?")) {
 				this.speed = Speed.fast;
 
 				Point runAway = getRunAwayCoord(t.getCoordinate());
@@ -265,7 +284,7 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 				// System.err.println("Pterodactel is Approaching Wolf!");
 				break;
 			}
-			if (t.getTypeName().equals("Wolf")) {
+			if (t.getTypeName().equals("?")) {
 				this.speed = Speed.fast;
 				Point runAway = getRunAwayCoord(t.getCoordinate());
 				this.targetX = (int) runAway.getX();
@@ -273,7 +292,7 @@ public class Asteroid implements Movable, Drawable, Tight, Visible, Watcher {
 				// System.err.println("Pterodactel is Approaching Wolf!");
 				break;
 			}
-			if (t.getTypeName().equals("HomoSapiens")) {
+			if (t.getTypeName().equals("Planet")) {
 				this.speed = Speed.fast;
 				// targeting HomoSapiens object
 				this.targetX = (int) t.getCoordinate().getX();

@@ -9,11 +9,11 @@ import java.util.Scanner;
 
 import primitiveWorld.engine.EventCollector;
 import primitiveWorld.interfaces.LocalObject;
-import primitiveWorld.landscapes.Forest;
-import primitiveWorld.landscapes.Marshland;
+import primitiveWorld.landscapes.Forest; 
 import primitiveWorld.landscapes.Space;
 import primitiveWorld.landscapes.Spaceship;
 import primitiveWorld.landscapes.Water;
+import primitiveWorld.landscapes.Wormhole;
 import primitiveWorld.localObjects.LocalObjectsFactory;
 
 public class LocationLoader {
@@ -53,7 +53,7 @@ public class LocationLoader {
 						location.area[i][j] = new Space();
 						break;
 					case 'W': // wormhole
-						location.area[i][j] = new Marshland();
+						location.area[i][j] = new Wormhole();
 						break;
 					case 'P': // planet
 						location.area[i][j] = new Forest();

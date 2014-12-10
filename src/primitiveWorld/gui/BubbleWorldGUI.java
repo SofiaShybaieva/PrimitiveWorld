@@ -116,7 +116,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 
 		this.addKeyListener(this);
 		BubbleWorldGUI that = this;
-		timer = new Timer(500, new ActionListener() {
+		timer = new Timer(100, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -169,6 +169,7 @@ public class BubbleWorldGUI extends JFrame implements KeyListener {
 		panel.add(resultTextArea);
 		panel.setVisible(true);
 		this.add(panel);
+		this.onLoadLocation("/home/demming/PrimitiveWorld/example.location");
 
 	}
 

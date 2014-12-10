@@ -37,7 +37,7 @@ public class Shuttle implements Movable, Drawable, EventListener, Visible,
 
 	private void init() {
 		this.isUnderControl = false;
-		this.setPassRights("");
+		this.setPassRights("f");
 		this.coord = new Point();
 		this.coord.setLocation(0, 0);
 		this.nextX = this.nextY = this.targetX = this.targetY = 0;
@@ -114,7 +114,7 @@ public class Shuttle implements Movable, Drawable, EventListener, Visible,
 		if (this.isUnderControl == false)
 			return;
 
-		int step = 2;
+		int step = 5;
 		int x0 = (int) (this.coord.getX());
 		int y0 = (int) (this.coord.getY());
 

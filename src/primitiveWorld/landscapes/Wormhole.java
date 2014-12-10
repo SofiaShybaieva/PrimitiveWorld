@@ -14,13 +14,13 @@ import primitiveWorld.engine.event.CommandEvent;
 import primitiveWorld.interfaces.Landscape;
 import primitiveWorld.interfaces.Movable;
 // wormhole
-public class Marshland implements Landscape {
+public class Wormhole implements Landscape {
 	Image image;
-	File file = new File("galaxy1.jpg");
+	File file = new File("wormhole.png");
 
 	// BufferedImage bufferedImage;
 
-	public Marshland() {
+	public Wormhole() {
 		try {
 			image = ImageIO.read(file);
 			// bufferedImage = new BufferedImage(20, 20,
@@ -28,33 +28,25 @@ public class Marshland implements Landscape {
 			// Graphics g = bufferedImage.getGraphics();
 			// g.drawImage(image, 0, 0, 20, 20, null);
 		} catch (IOException e) {
-			System.err.println("Image Marshland not found!");
+			System.err.println("Image Wormhole not found!");
 		}
 	}
 
 	@Override
 	public void draw(Graphics g, Point coord) {
-		g.drawImage(image, coord.x, coord.y, 20, 20, null);
+		g.drawImage(image, coord.x, coord.y, 40, 40, null);
 
 	}
 
 	@Override
 	public boolean isCanEnterOn(Movable traveler) {
-		// String rights = traveler.getPassRights();
-		// if (rights.contains("f"))
-		// return true;
-		// if (rights.contains("m"))
-		return true;
-		// return false;
+		
+		return true;// return false;
 	}
 
 	@Override
 	public boolean isCanStayOn(Movable traveler) {
-		String rights = traveler.getPassRights();
-		if (rights.contains("f"))
-			return true;
-		if (rights.contains("m"))
-			return true;
+		
 
 		EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 				traveler));

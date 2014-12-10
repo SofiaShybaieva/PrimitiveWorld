@@ -127,12 +127,11 @@ public class Engine implements Enginable {
 				freeEvent.run();
 			}
 		}
-		// System.out.println("Global Events Messages: " +
-		// globalEventsMessages);
+		
 
-		// if (globalEventsMessages.isEmpty() != true) {
-		// drawMessage(globalEventsMessages);
-		// }
+		 if (globalEventsMessages.isEmpty() != true) {
+		 drawMessage(globalEventsMessages);
+		 }
 
 	}
 
@@ -198,7 +197,7 @@ public class Engine implements Enginable {
 			double distance = obj.getCoordinate().distance(target.getX(),
 					target.getY());
 			if (distance < 20) {
-				// System.err.println("Touch event " + test.getTypeName());
+				System.err.println("Touch event " + test.getTypeName());
 				return obj;
 			}
 		}

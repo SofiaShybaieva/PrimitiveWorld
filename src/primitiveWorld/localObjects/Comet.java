@@ -22,11 +22,11 @@ import primitiveWorld.interfaces.Tight;
 import primitiveWorld.interfaces.Visible;
 import primitiveWorld.interfaces.Watcher;
 
-public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
+public class Comet implements Movable, Drawable, Tight, Visible, Watcher {
 
 	private Point coord;
 	private Image image;
-	private File file = new File("krokodile.png");
+	private File file = new File("comet.png");
 	private String passRights = "";
 	private int nextX;
 	private int nextY;
@@ -34,9 +34,9 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	private int oldX, oldY;
 	private Dimension size = new Dimension(20, 20);
 	private int visibility = 100;
-	private int contactRadius = 50;
-	private ArrayList<Point> patrol = null;
-	private int speed = 0;
+	private int contactRadius = 100;
+	private static ArrayList<Point> patrol = null;
+	private int speed = 5;
 	private int currentPoint = 0;
 	private int ticks = 0;
 
@@ -49,17 +49,17 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	}
 
-	public Krokodile() {
+	public Comet() {
 		init();
 	}
 
-	public Krokodile(int x, int y) {
+	public Comet(int x, int y) {
 		init();
 		this.coord.setLocation(x, y);
 
 	}
 
-	public Krokodile(int x, int y, ArrayList<Point> points) {
+	public Comet(int x, int y, ArrayList<Point> points) {
 		init();
 		this.coord.setLocation(x, y);
 		this.patrol = points;
@@ -72,7 +72,7 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public String getTypeName() {
 
-		return "Krokodile";
+		return "Comet";
 	}
 
 	@Override
@@ -107,10 +107,10 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void draw(Graphics g) {
 
-		g.setColor(Color.GREEN);
-		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
-				- this.contactRadius, this.contactRadius * 2,
-				this.contactRadius * 2, 0, 360);
+//		g.setColor(Color.GREEN);
+//		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+//				- this.contactRadius, this.contactRadius * 2,
+//				this.contactRadius * 2, 0, 360);
 
 		// display patrol points
 		// for (int i = 0; i < patrol.size(); i++) {
@@ -123,8 +123,7 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 		// patrol.get(i).y);
 		// }
 
-		if (this.speed > 0)
-			g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20,
+			g.drawImage(image, this.coord.x - 20, this.coord.y - 15, 40, 30,
 					null);
 	}
 
@@ -132,16 +131,14 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 		try {
 			image = ImageIO.read(file);
 		} catch (IOException e) {
-			System.err.println("Image Krokodile not found!");
+			System.err.println("Image Comet not found!");
 		}
 	}
 
 	@Override
 	public void nextStep() {
-		this.ticks++;
-		if (ticks < 30)
-			return;
-		this.speed = 2;
+		 
+		this.speed = 5;
 		// no move was possible after last step, direction is blocked, make new
 		// target
 		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
@@ -161,8 +158,7 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 				this.currentPoint = 0;
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
-			this.speed = 0;
-			this.ticks = 0;
+			
 		}
 
 		int stepX = (int) (1 + Math.random() * speed);
@@ -207,33 +203,27 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 	@Override
 	public void atZone(Collection<Visible> objects) {
 		if (objects.isEmpty()) {
-			//this.speed = 2;
+			this.speed = 5;
 			return;
 		}
 
 		for (Visible t : objects) {
 			// hide when other objects are approaching
-			if (t.getTypeName().equals("HomoSapiens")
-					|| t.getTypeName().equals("Wolf")
-					|| t.getTypeName().equals("Pterodactel")) {
+			if (t.getTypeName().equals("?")
+					|| t.getTypeName().equals("?")
+					|| t.getTypeName().equals("Planet")) {
 
 				int distance = (int) t.getCoordinate().distance(this.coord);
 
 				// attack closes object
-				if (distance<=30) {
+				if (distance<=100) {
 					this.targetX = (int) t.getCoordinate().getX();
 					this.targetY = (int) t.getCoordinate().getY();
-					this.speed=2;
-					//System.err.println("Wolf is Targeting an object - " + t.getClass());
+					this.speed=10;
+					
 					break;
 				}
-				// hide and allow objects to come closer
-				if (distance > 30) {
-					this.speed = 0;
-					//this.ticks --;
-					//System.err.println("Krokodile is hiding!");
-					break;
-				}
+				
 				break;
 			}
 
@@ -279,8 +269,8 @@ public class Krokodile implements Movable, Drawable, Tight, Visible, Watcher {
 
 	@Override
 	public void touch(LocalObject object) {
-		if (object.getTypeName().equals("HomoSapiens")
-				|| object.getTypeName().equals("Wolf")) {
+		if (object.getTypeName().equals("?")
+				|| object.getTypeName().equals("Shuttle")) {
 			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 					object));
 		}

@@ -113,20 +113,21 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 	@Override
 	public void draw(Graphics g) {
 
-		g.setColor(Color.YELLOW);
-		g.drawArc(this.coord.x - this.contactRadius, this.coord.y
-				- this.contactRadius, this.contactRadius * 2,
-				this.contactRadius * 2, 0, 360);
+//		 g.setColor(Color.YELLOW);
+//		 g.drawArc(this.coord.x - this.contactRadius, this.coord.y
+//		 - this.contactRadius, this.contactRadius * 2,
+//		 this.contactRadius * 2, 0, 360);
+
 		// display patrol points
-//		for (int i = 0; i < patrol.size(); i++) {
-//			if (i == this.currentPoint)
-//				g.setColor(Color.RED);
-//			else
-//				g.setColor(Color.GREEN);
-//			g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
-//			g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
-//					patrol.get(i).y);
-//		}
+		// for (int i = 0; i < patrol.size(); i++) {
+		// if (i == this.currentPoint)
+		// g.setColor(Color.RED);
+		// else
+		// g.setColor(Color.GREEN);
+		// g.fillArc(patrol.get(i).x, patrol.get(i).y, 4, 4, 0, 360);
+		// g.drawLine(this.coord.x, this.coord.y, patrol.get(i).x,
+		// patrol.get(i).y);
+		// }
 
 		g.drawImage(image, this.coord.x - 10, this.coord.y - 10, 20, 20, null);
 	}
@@ -144,8 +145,8 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 
 		// no move was possible after last step, direction is blocked, make new
 		// target
-		if (this.oldX == this.coord.x && this.oldY == this.coord.y) { 
-			this.currentPoint = (int) (Math.random()*this.patrol.size());
+		if (this.oldX == this.coord.x && this.oldY == this.coord.y) {
+			this.currentPoint = (int) (Math.random() * this.patrol.size());
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
 
@@ -161,7 +162,7 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 			this.targetX = this.patrol.get(currentPoint).x;
 			this.targetY = this.patrol.get(currentPoint).y;
 		}
-		int step = (this.speed == Speed.fast ? 8 : 4);
+		int step = (this.speed == Speed.fast ? 5 : 2);
 		// int stepX = (int) (1 + Math.random() * step);
 		// int stepY = (int) (1 + Math.random() * step);
 		int x0 = (int) (this.coord.getX());
@@ -176,7 +177,8 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 		this.nextY = y0 + step * signY;
 		this.oldX = this.coord.x;
 		this.oldY = this.coord.y;
-		// System.err.println("targetX,targetY "+targetX+" "+targetY);
+//		System.err.println("targetX,targetY: " + targetX + " " + targetY
+//				+ "nextX,nextY: " + nextX + " " + nextY);
 	}
 
 	@Override
@@ -237,19 +239,18 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 		for (Visible t : objects) {
 			// order of the checks is: HomoSapiens, Wolf (decreasing
 			// value of catching the object)
-			if (t.getTypeName().equals("HomoSapiens")) {
-				this.speed = Speed.fast;
-				this.targetX = (int) t.getCoordinate().getX();
-				this.targetY = (int) t.getCoordinate().getY();
-				// System.err.println("Pterodactel is Targeting HomoSapiens!");
-				break;
-			}
-			if (t.getTypeName().equals("Wolf")) {
+			if (t.getTypeName().equals("Shuttle")) {
 				this.speed = Speed.fast;
 				this.targetX = (int) t.getCoordinate().getX();
 				this.targetY = (int) t.getCoordinate().getY();
 
-				// System.err.println("Pterodactel is Targeting Wolf!");
+				break;
+			}
+			if (t.getTypeName().equals("Planet")) {
+				this.speed = Speed.fast;
+				this.targetX = (int) t.getCoordinate().getX();
+				this.targetY = (int) t.getCoordinate().getY();
+
 				break;
 			}
 
@@ -271,10 +272,7 @@ public class Pirateship implements Movable, Drawable, Visible, Watcher, Tight {
 	public void touch(LocalObject object) {
 
 		// eat (remove) 4 types of objects when in touch
-		if (object.getTypeName().equals("Wolf")
-				|| object.getTypeName().equals("HomoSapiens")
-				|| object.getTypeName().equals("Snake")
-				|| object.getTypeName().equals("Krokodile")) {
+		if (object.getTypeName().equals("Shuttle")) {
 			EventCollector.addEvent(new CommandEvent(Command.removeLocalObject,
 					object));
 			this.speed = Speed.slow;
